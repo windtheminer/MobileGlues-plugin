@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">MobileGlues</string>
+
+    <string name="info_launcher">Fold Craft Launcher (>=1.2.0.5) 插件</string>
+
+    <string name="view_name">名称：</string>
+    <string name="view_version">版本：</string>
+    <string name="view_author">作者：</string>
+    <string name="view_copyright">版权：</string>
+    <string name="view_launcher">启动器：</string>
+
+    <string name="open_options">修改渲染器设置</string>
+
+    <string name="option_angle">启用 ANGLE 作为 OpenGLES 驱动</string>
+    <string name="option_angle_disable_if_possible">尽可能不启用</string>
+    <string name="option_angle_enable_if_possible">尽可能启用</string>
+    <string name="option_angle_disable">不启用</string>
+    <string name="option_angle_enable">启用</string>
+
+    <string name="option_no_error">隐藏 shader 报错</string>
+    <string name="option_no_error_auto">自动</string>
+    <string name="option_no_error_enable">启用</string>
+    <string name="option_no_error_disable">不启用</string>
+
+    <string name="dialog_positive">确认</string>
+    <string name="dialog_negative">取消</string>
+
+    <string name="dialog_permission_title">提示</string>
+    <string name="dialog_permission_msg">修改渲染选项需要读写权限，请授予读写权限后再修改。</string>
+</resources>
