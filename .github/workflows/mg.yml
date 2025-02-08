@@ -10,7 +10,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Fetch git submodules
+        run: git submodule update --init --recursive --remote
 
       - name: Set current date as env variable
         run: echo "date_today=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
