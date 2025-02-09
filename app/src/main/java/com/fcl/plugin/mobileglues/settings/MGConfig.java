@@ -16,10 +16,10 @@ public class MGConfig {
 
     private int enableANGLE;
     private int enableNoError;
-    private boolean enableExtGL43;
-    private boolean enableExtComputeShader;
+    private int enableExtGL43;
+    private int enableExtComputeShader;
 
-    public MGConfig(int enableANGLE, int enableNoError, boolean enableExtGL43, boolean enableExtComputeShader) {
+    public MGConfig(int enableANGLE, int enableNoError, int enableExtGL43, int enableExtComputeShader) {
         this.enableANGLE = enableANGLE;
         this.enableNoError = enableNoError;
         this.enableExtGL43 = enableExtGL43;
@@ -36,12 +36,12 @@ public class MGConfig {
         saveConfig();
     }
 
-    public void setEnableExtGL43(boolean enableExtGL43) throws IOException {
+    public void setEnableExtGL43(int enableExtGL43) throws IOException {
         this.enableExtGL43 = enableExtGL43;
         saveConfig();
     }
 
-    public void setEnableExtComputeShader(boolean enableExtComputeShader) throws IOException {
+    public void setEnableExtComputeShader(int enableExtComputeShader) throws IOException {
         this.enableExtComputeShader = enableExtComputeShader;
         saveConfig();
     }
@@ -54,11 +54,11 @@ public class MGConfig {
         return enableNoError;
     }
 
-    public boolean isEnableExtGL43() {
+    public int getEnableExtGL43() {
         return enableExtGL43;
     }
 
-    public boolean isEnableExtComputeShader() {
+    public int getEnableExtComputeShader() {
         return enableExtComputeShader;
     }
 

@@ -85,7 +85,7 @@ public class MainActivity extends ComponentActivity implements AdapterView.OnIte
             config = MGConfig.loadConfig();
 
             if (config == null)
-                config = new MGConfig(0, 0, false, false);
+                config = new MGConfig(0, 0, 0, 0);
 
             if (config.getEnableANGLE() > 3 || config.getEnableANGLE() < 0)
                 config.setEnableANGLE(0);
@@ -94,8 +94,8 @@ public class MainActivity extends ComponentActivity implements AdapterView.OnIte
 
             angleSpinner.setSelection(config.getEnableANGLE());
             noErrorSpinner.setSelection(config.getEnableNoError());
-            extGL43Switch.setChecked(config.isEnableExtGL43());
-            extCsSwitch.setChecked(config.isEnableExtComputeShader());
+            extGL43Switch.setChecked(config.getEnableExtGL43() == 1);
+            extCsSwitch.setChecked(config.getEnableExtComputeShader() == 1);
 
             angleSpinner.setOnItemSelectedListener(this);
             noErrorSpinner.setOnItemSelectedListener(this);
@@ -193,7 +193,7 @@ public class MainActivity extends ComponentActivity implements AdapterView.OnIte
     public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
         if (compoundButton == extGL43Switch && config != null) {
             try {
-                config.setEnableExtGL43(b);
+                config.setEnableExtGL43(b ? 1 : 0);
             } catch (IOException e) {
                 Logger.getLogger("MG").log(Level.SEVERE, "Failed to save config! Exception: ", e.getCause());
                 Toast.makeText(this, getString(R.string.warning_save_failed), Toast.LENGTH_SHORT).show();
@@ -201,7 +201,7 @@ public class MainActivity extends ComponentActivity implements AdapterView.OnIte
         }
         if (compoundButton == extCsSwitch && config != null) {
             try {
-                config.setEnableExtComputeShader(b);
+                config.setEnableExtComputeShader(b ? 1 : 0);
             } catch (IOException e) {
                 Logger.getLogger("MG").log(Level.SEVERE, "Failed to save config! Exception: ", e.getCause());
                 Toast.makeText(this, getString(R.string.warning_save_failed), Toast.LENGTH_SHORT).show();
