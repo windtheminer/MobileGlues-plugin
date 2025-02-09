@@ -2,7 +2,7 @@ name: MobileGlues
 
 on:
   push:
-    branches: [ main, optifine-fix ]
+    branches: [ main ]
 
 jobs:
   build:
