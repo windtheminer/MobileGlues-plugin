@@ -6,26 +6,37 @@ on:
 
 jobs:
   build:
+
     runs-on: ubuntu-latest
-    env:
-      PROJECT_ROOT: ${{github.workspace}}
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+          token: ${{ secrets.ACCESS_TOKEN }}
 
-      - name: Fetch git submodules
-        run: git submodule update --init --recursive --remote
+      - name: Set current date as env variable
+        run: echo "date_today=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
 
-      - name: set up JDK 17
+      - name: Set repository name as env variable
+        run: echo "repository_name=$(echo '${{ github.repository }}' | awk -F '/' '{print $2}')" >> $GITHUB_ENV
+
+      - name: Set Up JDK
         uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
-          java-version: 17
+          distribution: 'zulu'
+          java-version: '17'
+          cache: 'gradle'
 
-      - name: Run gradle build
-        run: ./gradlew assemblerelease
+      - name: Change wrapper permissions
+        run: chmod +x ./gradlew
+
+      - name: Build apk
+        run: ./gradlew assembleRelease
 
       - name: Upload apk
         uses: actions/upload-artifact@v4
         with:
-          name: MobileGlues
-          path: app/build/outputs/apk/release/*
+          name: ${{ env.repository_name }}_${{ env.date_today }}
+          path: app/build/outputs/apk/release/
