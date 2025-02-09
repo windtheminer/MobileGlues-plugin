@@ -17,17 +17,24 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import androidx.activity.ComponentActivity;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.fcl.plugin.mobileglues.settings.MGConfig;
 import com.fcl.plugin.mobileglues.utils.ResultListener;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class MainActivity extends ComponentActivity implements AdapterView.OnItemSelectedListener {
+
+    private MGConfig config = null;
 
     private Button openOptions;
 
@@ -61,17 +68,35 @@ public class MainActivity extends ComponentActivity implements AdapterView.OnIte
         ArrayAdapter<String> noErrorAdapter = new ArrayAdapter<>(this, R.layout.spinner, noErrorOptions);
         noErrorSpinner.setAdapter(noErrorAdapter);
 
-        angleSpinner.setOnItemSelectedListener(this);
-        noErrorSpinner.setOnItemSelectedListener(this);
-
         openOptions.setOnClickListener(view -> checkPermission());
 
         checkPermissionSilently();
     }
 
     private void showOptions() {
-        openOptions.setVisibility(View.GONE);
-        optionLayout.setVisibility(View.VISIBLE);
+        try {
+            config = MGConfig.loadConfig();
+
+            if (config == null)
+                config = new MGConfig(0, 0);
+
+            if (config.getEnableANGLE() > 3 || config.getEnableANGLE() < 0)
+                config.setEnableANGLE(0);
+            if (config.getEnableNoError() > 2 || config.getEnableNoError() < 0)
+                config.setEnableNoError(0);
+
+            angleSpinner.setSelection(config.getEnableANGLE());
+            noErrorSpinner.setSelection(config.getEnableNoError());
+
+            angleSpinner.setOnItemSelectedListener(this);
+            noErrorSpinner.setOnItemSelectedListener(this);
+
+            openOptions.setVisibility(View.GONE);
+            optionLayout.setVisibility(View.VISIBLE);
+        } catch (IOException e) {
+            Logger.getLogger("MG").log(Level.SEVERE, "Failed to load config! Exception: ", e.getCause());
+            Toast.makeText(this, getString(R.string.warning_load_failed), Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void checkPermissionSilently() {
@@ -130,11 +155,21 @@ public class MainActivity extends ComponentActivity implements AdapterView.OnIte
 
     @Override
     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-        if (adapterView == angleSpinner) {
-
+        if (adapterView == angleSpinner && config != null) {
+            try {
+                config.setEnableANGLE(i);
+            } catch (IOException e) {
+                Logger.getLogger("MG").log(Level.SEVERE, "Failed to save config! Exception: ", e.getCause());
+                Toast.makeText(this, getString(R.string.warning_save_failed), Toast.LENGTH_SHORT).show();
+            }
         }
-        if (adapterView == noErrorSpinner) {
-
+        if (adapterView == noErrorSpinner && config != null) {
+            try {
+                config.setEnableNoError(i);
+            } catch (IOException e) {
+                Logger.getLogger("MG").log(Level.SEVERE, "Failed to save config! Exception: ", e.getCause());
+                Toast.makeText(this, getString(R.string.warning_save_failed), Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
