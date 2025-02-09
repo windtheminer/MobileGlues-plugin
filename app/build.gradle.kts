@@ -12,8 +12,8 @@ android {
         applicationId = "com.fcl.plugin.mobileglues"
         minSdk = 26
         targetSdk = 34
-        versionCode = 10
-        versionName = "0.0.1"
+        versionCode = 1000
+        versionName = "1.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -35,14 +35,12 @@ android {
         configureEach {
             resValue("string","app_name","MobileGlues")
 
-            manifestPlaceholders["des"] = "MobileGlues"
+            manifestPlaceholders["des"] = "MobileGlues (OpenGL 4.0, 1.17+)"
             manifestPlaceholders["renderer"] = "MobileGlues:libmobileglues.so:libEGL.so"
 
             manifestPlaceholders["boatEnv"] = mutableMapOf<String,String>().apply {
                 put("LIBGL_ES", "3")
                 put("DLOPEN", "libspirv-cross-c-shared.so,libshaderconv.so")
-                //put("LIBGL_EGL", "libEGL_angle.so")
-                //put("LIBGL_GLES", "libGLESv2_angle.so")
             }.run {
                 var env = ""
                 forEach { (key, value) ->
@@ -53,8 +51,6 @@ android {
             manifestPlaceholders["pojavEnv"] = mutableMapOf<String,String>().apply {
                 put("LIBGL_ES", "3")
                 put("DLOPEN", "libspirv-cross-c-shared.so,libshaderconv.so")
-                //put("LIBGL_EGL", "libEGL_angle.so")
-                //put("LIBGL_GLES", "libGLESv2_angle.so")
                 put("POJAV_RENDERER", "opengles3")
             }.run {
                 var env = ""
@@ -65,13 +61,6 @@ android {
             }
         }
     }
-
-//    externalNativeBuild {
-//        cmake {
-//            path("src/main/cpp/CMakeLists.txt")
-//            version = "3.22.1"
-//        }
-//    }
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
@@ -87,6 +76,7 @@ android {
 
 dependencies {
 
+    implementation(libs.gson)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
