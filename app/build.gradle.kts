@@ -35,7 +35,7 @@ android {
         configureEach {
             resValue("string","app_name","MobileGlues")
 
-            manifestPlaceholders["des"] = "MobileGlues"
+            manifestPlaceholders["des"] = "MobileGlues (OpenGL 4.0, 1.17+)"
             manifestPlaceholders["renderer"] = "MobileGlues:libmobileglues.so:libEGL.so"
 
             manifestPlaceholders["boatEnv"] = mutableMapOf<String,String>().apply {
