@@ -24,8 +24,8 @@
     <string name="option_no_error_disable_pri">忽略 shader/program 报错</string>
     <string name="option_no_error_disable_sec">忽略 shader/program/framebuffer 报错</string>
 
-    <string name="option_ext_gl43">启用 OpenGL 4.3 扩展</string>
-    <string name="option_ext_cs">启用 compute shader 扩展</string>
+    <string name="option_ext_gl43">启用不完整的 OpenGL 4.3 扩展</string>
+    <string name="option_ext_cs">启用不完整的 compute shader 扩展</string>
 
     <string name="dialog_positive">确认</string>
     <string name="dialog_negative">取消</string>
