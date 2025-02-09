@@ -15,8 +15,10 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import androidx.activity.ComponentActivity;
@@ -32,7 +34,7 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class MainActivity extends ComponentActivity implements AdapterView.OnItemSelectedListener {
+public class MainActivity extends ComponentActivity implements AdapterView.OnItemSelectedListener, CompoundButton.OnCheckedChangeListener {
 
     private MGConfig config = null;
 
@@ -41,6 +43,8 @@ public class MainActivity extends ComponentActivity implements AdapterView.OnIte
     private LinearLayout optionLayout;
     private Spinner angleSpinner;
     private Spinner noErrorSpinner;
+    private Switch extGL43Switch;
+    private Switch extCsSwitch;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -52,6 +56,8 @@ public class MainActivity extends ComponentActivity implements AdapterView.OnIte
         optionLayout = findViewById(R.id.option_layout);
         angleSpinner = findViewById(R.id.spinner_angle);
         noErrorSpinner = findViewById(R.id.spinner_no_error);
+        extGL43Switch = findViewById(R.id.switch_ext_gl43);
+        extCsSwitch = findViewById(R.id.switch_ext_cs);
 
         ArrayList<String> angleOptions = new ArrayList<>();
         angleOptions.add(getString(R.string.option_angle_disable_if_possible));
@@ -64,7 +70,8 @@ public class MainActivity extends ComponentActivity implements AdapterView.OnIte
         ArrayList<String> noErrorOptions = new ArrayList<>();
         noErrorOptions.add(getString(R.string.option_no_error_auto));
         noErrorOptions.add(getString(R.string.option_no_error_enable));
-        noErrorOptions.add(getString(R.string.option_no_error_disable));
+        noErrorOptions.add(getString(R.string.option_no_error_disable_pri));
+        noErrorOptions.add(getString(R.string.option_no_error_disable_sec));
         ArrayAdapter<String> noErrorAdapter = new ArrayAdapter<>(this, R.layout.spinner, noErrorOptions);
         noErrorSpinner.setAdapter(noErrorAdapter);
 
@@ -78,18 +85,22 @@ public class MainActivity extends ComponentActivity implements AdapterView.OnIte
             config = MGConfig.loadConfig();
 
             if (config == null)
-                config = new MGConfig(0, 0);
+                config = new MGConfig(0, 0, false, false);
 
             if (config.getEnableANGLE() > 3 || config.getEnableANGLE() < 0)
                 config.setEnableANGLE(0);
-            if (config.getEnableNoError() > 2 || config.getEnableNoError() < 0)
+            if (config.getEnableNoError() > 3 || config.getEnableNoError() < 0)
                 config.setEnableNoError(0);
 
             angleSpinner.setSelection(config.getEnableANGLE());
             noErrorSpinner.setSelection(config.getEnableNoError());
+            extGL43Switch.setChecked(config.isEnableExtGL43());
+            extCsSwitch.setChecked(config.isEnableExtComputeShader());
 
             angleSpinner.setOnItemSelectedListener(this);
             noErrorSpinner.setOnItemSelectedListener(this);
+            extGL43Switch.setOnCheckedChangeListener(this);
+            extCsSwitch.setOnCheckedChangeListener(this);
 
             openOptions.setVisibility(View.GONE);
             optionLayout.setVisibility(View.VISIBLE);
@@ -176,6 +187,26 @@ public class MainActivity extends ComponentActivity implements AdapterView.OnIte
     @Override
     public void onNothingSelected(AdapterView<?> adapterView) {
 
+    }
+
+    @Override
+    public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+        if (compoundButton == extGL43Switch && config != null) {
+            try {
+                config.setEnableExtGL43(b);
+            } catch (IOException e) {
+                Logger.getLogger("MG").log(Level.SEVERE, "Failed to save config! Exception: ", e.getCause());
+                Toast.makeText(this, getString(R.string.warning_save_failed), Toast.LENGTH_SHORT).show();
+            }
+        }
+        if (compoundButton == extCsSwitch && config != null) {
+            try {
+                config.setEnableExtComputeShader(b);
+            } catch (IOException e) {
+                Logger.getLogger("MG").log(Level.SEVERE, "Failed to save config! Exception: ", e.getCause());
+                Toast.makeText(this, getString(R.string.warning_save_failed), Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     @Override
