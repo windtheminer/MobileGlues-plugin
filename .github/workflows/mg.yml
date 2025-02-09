@@ -6,7 +6,7 @@ on:
 
 jobs:
   build:
-    runs-on: [linux, x64]
+    runs-on: ubuntu-latest
     env:
       PROJECT_ROOT: ${{github.workspace}}
     steps:
@@ -25,7 +25,6 @@ jobs:
         run: ./gradlew assemblerelease
 
       - name: Upload apk
-        if: startsWith(github.ref, 'refs/heads/')
         uses: actions/upload-artifact@v4
         with:
           name: MobileGlues
