@@ -28,4 +28,7 @@
 
     <string name="dialog_permission_title">提示</string>
     <string name="dialog_permission_msg">修改渲染选项需要读写权限，请授予读写权限后再修改。</string>
+
+    <string name="warning_load_failed">无法加载 MG 配置文件！</string>
+    <string name="warning_save_failed">无法保存 MG 配置文件！</string>
 </resources>
