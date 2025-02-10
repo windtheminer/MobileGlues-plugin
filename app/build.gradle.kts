@@ -8,6 +8,8 @@ android {
     namespace = "com.fcl.plugin.mobileglues"
     compileSdk = 34
 
+    ndkVersion = "27.2.12479018"
+
     defaultConfig {
         applicationId = "com.fcl.plugin.mobileglues"
         minSdk = 26
