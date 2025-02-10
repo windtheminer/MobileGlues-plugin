@@ -5,17 +5,17 @@
     <string name="info_version" translatable="false">1.0.1</string>
     <string name="info_author" translatable="false">Swung, BZLZHH, Tungsten</string>
     <string name="info_copyright" translatable="false">Copyright © 2025 Swung0x48, BZLZHH, Tungsten. All rights reserved.\nLogo artwork kindly provided by Aou156.</string>
-    <string name="info_launcher">Plugin for Fold Craft Launcher (>=1.2.0.5)</string>
+    <string name="info_launcher" translatable="false">Fold Craft Launcher (>=1.2.0.5)\nZalith Launcher (>=1.4.0)</string>
 
     <string name="view_name">Name: </string>
     <string name="view_version">Version: </string>
     <string name="view_author">Author: </string>
     <string name="view_copyright">Copyright: </string>
-    <string name="view_launcher">Launcher: </string>
+    <string name="view_launcher">Compatible Launchers: </string>
 
     <string name="open_options">Modify renderer settings</string>
 
-    <string name="option_angle">Use ANGLE as OpenGLES driver</string>
+    <string name="option_angle">Use ANGLE as OpenGL ES driver</string>
     <string name="option_angle_disable_if_possible">Disable if possible</string>
     <string name="option_angle_enable_if_possible">Enable if possible</string>
     <string name="option_angle_disable">Disable</string>
@@ -27,8 +27,8 @@
     <string name="option_no_error_disable_pri">Ignore shader/program error</string>
     <string name="option_no_error_disable_sec">Ignore shader/program/framebuffer error</string>
 
-    <string name="option_ext_gl43">Enable incomplete OpenGL 4.3 extension</string>
-    <string name="option_ext_cs">Enable incomplete compute shader extension</string>
+    <string name="option_ext_gl43">Enable incomplete OpenGL43 extension</string>
+    <string name="option_ext_cs">Enable incomplete ARB_compute_shader extension</string>
 
     <string name="dialog_positive">OK</string>
     <string name="dialog_negative">Cancel</string>
@@ -37,8 +37,8 @@
     <string name="dialog_permission_msg">Modifying rendering options requires read and write permissions. Please grant read and write permissions before modifying.</string>
 
     <string name="dialog_title_warning">Warning</string>
-    <string name="warning_ext_gl43_enable">Enabling the OpenGL 43 extension may cause issues with some shaders and mods. Are you sure you want to continue?</string>
-    <string name="warning_ext_cs_enable">Enabling the compute_shader extension may cause issues with some shaders and mods. Are you sure you want to continue?</string>
+    <string name="warning_ext_gl43_enable">Enabling the incomplete OpenGL43 extension may cause issues with some shaders and mods. Are you sure you want to continue?</string>
+    <string name="warning_ext_cs_enable">Enabling the incomplete ARB_compute_shader extension may cause issues with some shaders and mods. Are you sure you want to continue?</string>
 
     <string name="warning_adreno_740_angle">Enabling ANGLE on Adreno 740 devices is highly likely to cause severe rendering issues. Are you sure you want to continue?</string>
 
