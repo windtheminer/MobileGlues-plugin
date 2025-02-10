@@ -29,6 +29,13 @@ jobs:
           java-version: '17'
           cache: 'gradle'
 
+      - name: Set Up Android NDK
+        uses: nttld/setup-ndk@v1
+        with:
+          ndk-version: r26d
+          local-cache: true
+          link-to-sdk: true
+
       - name: Change wrapper permissions
         run: chmod +x ./gradlew
 
@@ -38,5 +45,5 @@ jobs:
       - name: Upload apk
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.repository_name }}_${{ env.date_today }}
+          name: ${{ env.repository_name }}_${{ env.date_today }}_${{ github.sha }}
           path: app/build/outputs/apk/release/
