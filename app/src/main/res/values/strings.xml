@@ -2,7 +2,7 @@
     <string name="app_name">MobileGlues</string>
 
     <string name="info_name" translatable="false">MobileGlues</string>
-    <string name="info_version" translatable="false">1.0.0</string>
+    <string name="info_version" translatable="false">1.0.1</string>
     <string name="info_author" translatable="false">Swung, BZLZHH, Tungsten</string>
     <string name="info_copyright" translatable="false">Copyright © 2025 Swung0x48, BZLZHH, Tungsten. All rights reserved.\nLogo artwork kindly provided by Aou156.</string>
     <string name="info_launcher">Plugin for Fold Craft Launcher (>=1.2.0.5)</string>
@@ -35,6 +35,12 @@
 
     <string name="dialog_permission_title">Info</string>
     <string name="dialog_permission_msg">Modifying rendering options requires read and write permissions. Please grant read and write permissions before modifying.</string>
+
+    <string name="dialog_title_warning">Warning</string>
+    <string name="warning_ext_gl43_enable">Enabling the OpenGL 43 extension may cause issues with some shaders and mods. Are you sure you want to continue?</string>
+    <string name="warning_ext_cs_enable">Enabling the compute_shader extension may cause issues with some shaders and mods. Are you sure you want to continue?</string>
+
+    <string name="warning_adreno_740_angle">Enabling ANGLE on Adreno 740 devices is highly likely to cause severe rendering issues. Are you sure you want to continue?</string>
 
     <string name="warning_load_failed">Failed to load MG config!</string>
     <string name="warning_save_failed">Failed to save MG config!</string>

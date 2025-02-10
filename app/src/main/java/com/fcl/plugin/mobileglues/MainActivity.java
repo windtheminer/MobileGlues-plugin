@@ -5,13 +5,20 @@ import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.opengl.EGL14;
+import android.opengl.EGLContext;
+import android.opengl.EGLDisplay;
+import android.opengl.EGLSurface;
+import android.opengl.GLES20;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.Settings;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -166,12 +173,37 @@ public class MainActivity extends ComponentActivity implements AdapterView.OnIte
     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
         if (adapterView == angleSpinner && config != null) {
             try {
-                config.setEnableANGLE(i);
+                if (i == 3 && isAdreno740()) {
+                    new AlertDialog.Builder(this)
+                            .setTitle(getString(R.string.dialog_title_warning))
+                            .setMessage(getString(R.string.warning_adreno_740_angle))
+                            .setPositiveButton(getString(R.string.dialog_positive), new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    try {
+                                        config.setEnableANGLE(i);
+                                    } catch (IOException e) {
+                                        Logger.getLogger("MG").log(Level.SEVERE, "Failed to save config! Exception: ", e);
+                                        Toast.makeText(MainActivity.this, getString(R.string.warning_save_failed), Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            })
+                            .setNegativeButton(getString(R.string.dialog_negative), new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    angleSpinner.setSelection(config.getEnableANGLE());
+                                }
+                            })
+                            .show();
+                } else {
+                    config.setEnableANGLE(i);
+                }
             } catch (IOException e) {
                 Logger.getLogger("MG").log(Level.SEVERE, "Failed to save config! Exception: ", e.getCause());
                 Toast.makeText(this, getString(R.string.warning_save_failed), Toast.LENGTH_SHORT).show();
             }
         }
+        
         if (adapterView == noErrorSpinner && config != null) {
             try {
                 config.setEnableNoError(i);
@@ -188,25 +220,85 @@ public class MainActivity extends ComponentActivity implements AdapterView.OnIte
     }
 
     @Override
-    public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+    public void onCheckedChanged(final CompoundButton compoundButton, final boolean isChecked) {
         if (compoundButton == extGL43Switch && config != null) {
-            try {
-                config.setEnableExtGL43(b ? 1 : 0);
-            } catch (IOException e) {
-                Logger.getLogger("MG").log(Level.SEVERE, "Failed to save config! Exception: ", e.getCause());
-                Toast.makeText(this, getString(R.string.warning_save_failed), Toast.LENGTH_SHORT).show();
+            if (isChecked) {
+                new AlertDialog.Builder(MainActivity.this)
+                        .setTitle(getString(R.string.dialog_title_warning))
+                        .setMessage(getString(R.string.warning_ext_gl43_enable))
+                        .setCancelable(false)
+                        .setOnKeyListener(new DialogInterface.OnKeyListener() {
+                            @Override
+                            public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+                                return keyCode == KeyEvent.KEYCODE_BACK;
+                            }
+                        })
+                        .setPositiveButton(getString(R.string.dialog_positive), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                try {
+                                    config.setEnableExtGL43(1);
+                                } catch (IOException e) {
+                                    Logger.getLogger("MG").log(Level.SEVERE, "Failed to save config! Exception: ", e);
+                                    Toast.makeText(MainActivity.this, getString(R.string.warning_save_failed), Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        })
+                        .setNegativeButton(getString(R.string.dialog_negative), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                extGL43Switch.setChecked(false);
+                            }
+                        })
+                        .show();
+            } else {
+                try {
+                    config.setEnableExtGL43(0);
+                } catch (IOException e) {
+                    Logger.getLogger("MG").log(Level.SEVERE, "Failed to save config! Exception: ", e);
+                    Toast.makeText(MainActivity.this, getString(R.string.warning_save_failed), Toast.LENGTH_SHORT).show();
+                }
             }
         }
         if (compoundButton == extCsSwitch && config != null) {
-            try {
-                config.setEnableExtComputeShader(b ? 1 : 0);
-            } catch (IOException e) {
-                Logger.getLogger("MG").log(Level.SEVERE, "Failed to save config! Exception: ", e.getCause());
-                Toast.makeText(this, getString(R.string.warning_save_failed), Toast.LENGTH_SHORT).show();
+            if (isChecked) {
+                new AlertDialog.Builder(MainActivity.this)
+                        .setTitle(getString(R.string.dialog_title_warning))
+                        .setMessage(getString(R.string.warning_ext_cs_enable)).setCancelable(false)
+                        .setOnKeyListener(new DialogInterface.OnKeyListener() {
+                            @Override
+                            public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+                                return keyCode == KeyEvent.KEYCODE_BACK;
+                            }
+                        })
+                        .setPositiveButton(getString(R.string.dialog_positive), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                try {
+                                    config.setEnableExtComputeShader(1);
+                                } catch (IOException e) {
+                                    Logger.getLogger("MG").log(Level.SEVERE, "Failed to save config! Exception: ", e);
+                                    Toast.makeText(MainActivity.this, getString(R.string.warning_save_failed), Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        })
+                        .setNegativeButton(getString(R.string.dialog_negative), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                extCsSwitch.setChecked(false);
+                            }
+                        })
+                        .show();
+            } else {
+                try {
+                    config.setEnableExtComputeShader(0);
+                } catch (IOException e) {
+                    Logger.getLogger("MG").log(Level.SEVERE, "Failed to save config! Exception: ", e);
+                    Toast.makeText(MainActivity.this, getString(R.string.warning_save_failed), Toast.LENGTH_SHORT).show();
+                }
             }
         }
     }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -239,4 +331,74 @@ public class MainActivity extends ComponentActivity implements AdapterView.OnIte
             }
         }
     }
+
+    private String getGPUName() {
+        EGLDisplay eglDisplay = EGL14.eglGetDisplay(EGL14.EGL_DEFAULT_DISPLAY);
+        if (eglDisplay == EGL14.EGL_NO_DISPLAY) {
+            return null;
+        }
+
+        int[] version = new int[2];
+        if (!EGL14.eglInitialize(eglDisplay, version, 0, version, 1)) {
+            return null;
+        }
+
+        int[] configAttributes = {
+                EGL14.EGL_RED_SIZE, 8,
+                EGL14.EGL_GREEN_SIZE, 8,
+                EGL14.EGL_BLUE_SIZE, 8,
+                EGL14.EGL_RENDERABLE_TYPE, EGL14.EGL_OPENGL_ES2_BIT,
+                EGL14.EGL_NONE
+        };
+        android.opengl.EGLConfig[] eglConfigs = new android.opengl.EGLConfig[1];
+        int[] numConfigs = new int[1];
+        if (!EGL14.eglChooseConfig(eglDisplay, configAttributes, 0, eglConfigs, 0, eglConfigs.length, numConfigs, 0)) {
+            EGL14.eglTerminate(eglDisplay);
+            return null;
+        }
+
+        int[] contextAttributes = {
+                EGL14.EGL_CONTEXT_CLIENT_VERSION, 2,
+                EGL14.EGL_NONE
+        };
+        EGLContext eglContext = EGL14.eglCreateContext(eglDisplay, eglConfigs[0], EGL14.EGL_NO_CONTEXT, contextAttributes, 0);
+        if (eglContext == EGL14.EGL_NO_CONTEXT) {
+            EGL14.eglTerminate(eglDisplay);
+            return null;
+        }
+
+        int[] surfaceAttributes = {
+                EGL14.EGL_WIDTH, 1,
+                EGL14.EGL_HEIGHT, 1,
+                EGL14.EGL_NONE
+        };
+        EGLSurface eglSurface = EGL14.eglCreatePbufferSurface(eglDisplay, eglConfigs[0], surfaceAttributes, 0);
+        if (eglSurface == EGL14.EGL_NO_SURFACE) {
+            EGL14.eglDestroyContext(eglDisplay, eglContext);
+            EGL14.eglTerminate(eglDisplay);
+            return null;
+        }
+
+        if (!EGL14.eglMakeCurrent(eglDisplay, eglSurface, eglSurface, eglContext)) {
+            EGL14.eglDestroySurface(eglDisplay, eglSurface);
+            EGL14.eglDestroyContext(eglDisplay, eglContext);
+            EGL14.eglTerminate(eglDisplay);
+            return null;
+        }
+
+        String renderer = GLES20.glGetString(GLES20.GL_RENDERER);
+
+        EGL14.eglMakeCurrent(eglDisplay, EGL14.EGL_NO_SURFACE, EGL14.EGL_NO_SURFACE, EGL14.EGL_NO_CONTEXT);
+        EGL14.eglDestroySurface(eglDisplay, eglSurface);
+        EGL14.eglDestroyContext(eglDisplay, eglContext);
+        EGL14.eglTerminate(eglDisplay);
+
+        return renderer;
+    }
+
+    private boolean isAdreno740() {
+        String renderer = getGPUName();
+        return renderer != null && renderer.toLowerCase().contains("adreno") && renderer.contains("740");
+    }
+
 }
