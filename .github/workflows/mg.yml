@@ -29,12 +29,21 @@ jobs:
           java-version: '17'
           cache: 'gradle'
 
-      - name: Set Up Android NDK
-        uses: nttld/setup-ndk@v1
-        with:
-          ndk-version: r27c
-          local-cache: true
-          link-to-sdk: true
+#      - name: Set Up Android NDK
+#        uses: nttld/setup-ndk@v1
+#        with:
+#          ndk-version: r27c
+#          local-cache: true
+#          link-to-sdk: true
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android NDK
+        run: |
+          echo "y" | sdkmanager "ndk;27.2.12479018"
+          echo "ndk.dir=$ANDROID_HOME/ndk/27.2.12479018" >> local.properties
+      
 
       - name: Change wrapper permissions
         run: chmod +x ./gradlew
