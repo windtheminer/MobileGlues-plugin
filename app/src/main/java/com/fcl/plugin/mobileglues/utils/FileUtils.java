@@ -50,5 +50,9 @@ public class FileUtils {
         Files.createDirectories(file.getParent());
         Files.write(file, data);
     }
+    
+    public static void deleteFile(File file) throws IOException {
+        Files.delete(file.toPath());
+    }
 
 }

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -10,7 +11,7 @@
         android:orientation="horizontal">
 
         <TextView
-            android:layout_width="80dp"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:text="@string/view_name"
             android:layout_margin="5dp" />
@@ -30,7 +31,7 @@
         android:orientation="horizontal">
 
         <TextView
-            android:layout_width="80dp"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:text="@string/view_version"
             android:layout_margin="5dp" />
@@ -50,7 +51,7 @@
         android:orientation="horizontal">
 
         <TextView
-            android:layout_width="80dp"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:text="@string/view_author"
             android:layout_margin="5dp" />
@@ -70,7 +71,7 @@
         android:orientation="horizontal">
 
         <TextView
-            android:layout_width="80dp"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:text="@string/view_launcher"
             android:layout_margin="5dp" />
@@ -90,7 +91,7 @@
         android:orientation="horizontal">
 
         <TextView
-            android:layout_width="80dp"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:text="@string/view_copyright"
             android:layout_margin="5dp" />
@@ -112,9 +113,25 @@
     <LinearLayout
         android:id="@+id/option_layout"
         android:visibility="gone"
+        tools:visibility="visible"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
+        
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/option_glsl_cache"
+            android:layout_margin="5dp" />
+
+        <EditText
+            android:id="@+id/input_max_glsl_cache_size"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:autofillHints=""
+            android:inputType="number"
+            tools:ignore="LabelFor" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -192,6 +209,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/open_options"
+        tools:visibility="gone"
         android:id="@+id/open_options" />
 
 </LinearLayout>

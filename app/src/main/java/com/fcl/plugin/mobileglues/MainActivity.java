@@ -3,6 +3,8 @@ package com.fcl.plugin.mobileglues;
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
+import static java.sql.Types.NULL;
+
 import android.Manifest;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -18,12 +20,15 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.Settings;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Switch;
@@ -54,6 +59,7 @@ public class MainActivity extends ComponentActivity implements AdapterView.OnIte
     private Spinner noErrorSpinner;
     private Switch extGL43Switch;
     private Switch extCsSwitch;
+    private EditText inputMaxGlslCacheSize;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -62,6 +68,7 @@ public class MainActivity extends ComponentActivity implements AdapterView.OnIte
 
         openOptions = findViewById(R.id.open_options);
 
+        inputMaxGlslCacheSize = findViewById(R.id.input_max_glsl_cache_size);
         optionLayout = findViewById(R.id.option_layout);
         angleSpinner = findViewById(R.id.spinner_angle);
         noErrorSpinner = findViewById(R.id.spinner_no_error);
@@ -94,13 +101,17 @@ public class MainActivity extends ComponentActivity implements AdapterView.OnIte
             config = MGConfig.loadConfig();
 
             if (config == null)
-                config = new MGConfig(0, 0, 0, 0);
+                config = new MGConfig(0, 0, 0, 0, 0);
 
             if (config.getEnableANGLE() > 3 || config.getEnableANGLE() < 0)
                 config.setEnableANGLE(0);
             if (config.getEnableNoError() > 3 || config.getEnableNoError() < 0)
                 config.setEnableNoError(0);
-
+            
+            if (config.getMaxGlslCacheSize() == NULL)
+                config.setMaxGlslCacheSize(30);
+            
+            inputMaxGlslCacheSize.setText(String.valueOf(config.getMaxGlslCacheSize()));
             angleSpinner.setSelection(config.getEnableANGLE());
             noErrorSpinner.setSelection(config.getEnableNoError());
             extGL43Switch.setChecked(config.getEnableExtGL43() == 1);
@@ -110,6 +121,32 @@ public class MainActivity extends ComponentActivity implements AdapterView.OnIte
             noErrorSpinner.setOnItemSelectedListener(this);
             extGL43Switch.setOnCheckedChangeListener(this);
             extCsSwitch.setOnCheckedChangeListener(this);
+            inputMaxGlslCacheSize.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void afterTextChanged(Editable s) {
+                    String text = s.toString();
+                    if (!text.isEmpty()) {
+                        try {
+                            int number = Integer.parseInt(text);
+                            if (number < 0) {
+                                inputMaxGlslCacheSize.setError("Error: number cannot be less than 0.");
+                            }
+                            config.setMaxGlslCacheSize(number);
+                        } catch (NumberFormatException e) {
+                            inputMaxGlslCacheSize.setError("Error: invalid number.");
+                        } catch (IOException e) {
+                            inputMaxGlslCacheSize.setError("Error: unexpected error.");
+                            throw new RuntimeException(e);
+                        }
+                    }
+                }
+
+                @Override
+                public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {}
+
+                @Override
+                public void onTextChanged(CharSequence charSequence, int start, int before, int after) {}
+            });
 
             openOptions.setVisibility(View.GONE);
             optionLayout.setVisibility(View.VISIBLE);

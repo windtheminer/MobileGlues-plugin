@@ -8,7 +8,9 @@ import com.google.gson.Gson;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.DirectoryNotEmptyException;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -18,14 +20,25 @@ public class MGConfig {
     private int enableNoError;
     private int enableExtGL43;
     private int enableExtComputeShader;
+    private int maxGlslCacheSize;
 
-    public MGConfig(int enableANGLE, int enableNoError, int enableExtGL43, int enableExtComputeShader) {
+    public MGConfig(int enableANGLE, int enableNoError, int enableExtGL43, int enableExtComputeShader, int maxGlslCacheSize) {
         this.enableANGLE = enableANGLE;
         this.enableNoError = enableNoError;
         this.enableExtGL43 = enableExtGL43;
         this.enableExtComputeShader = enableExtComputeShader;
+        this.maxGlslCacheSize = maxGlslCacheSize;
     }
 
+    public void setMaxGlslCacheSize(int maxGlslCacheSize) throws IOException {
+        if (maxGlslCacheSize < 0)
+            return;
+        if (maxGlslCacheSize == 0)
+            clearCacheFile();
+        this.maxGlslCacheSize = maxGlslCacheSize;
+        saveConfig();
+    }
+    
     public void setEnableANGLE(int enableANGLE) throws IOException {
         this.enableANGLE = enableANGLE;
         saveConfig();
@@ -60,6 +73,18 @@ public class MGConfig {
 
     public int getEnableExtComputeShader() {
         return enableExtComputeShader;
+    }
+    
+    public int getMaxGlslCacheSize() { return maxGlslCacheSize; }
+    
+    private void clearCacheFile() {
+        try {
+            FileUtils.deleteFile(new File(Constants.GLSL_CACHE_FILE_PATH));
+        } catch (NoSuchFileException | DirectoryNotEmptyException ignored) {
+            
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void saveConfig() throws IOException {
