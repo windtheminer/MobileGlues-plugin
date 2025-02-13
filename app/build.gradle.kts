@@ -14,8 +14,8 @@ android {
         applicationId = "com.fcl.plugin.mobileglues"
         minSdk = 26
         targetSdk = 34
-        versionCode = 1030
-        versionName = "1.0.3"
+        versionCode = 1031
+        versionName = "1.0.3.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -87,7 +87,7 @@ android {
 }
 
 dependencies {
-
+    implementation("androidx.documentfile:documentfile:1.0.1")
     implementation(libs.gson)
     implementation(libs.androidx.activity.compose)
     implementation(project(":MobileGlues"))

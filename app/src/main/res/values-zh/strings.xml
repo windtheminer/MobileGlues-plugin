@@ -31,7 +31,7 @@
 
     <string name="dialog_permission_title">提示</string>
     <string name="dialog_permission_msg">修改渲染选项需要读写权限，请授予读写权限后再修改。</string>
-
+    <string name="dialog_permission_msg_android_Q">修改渲染选项需要读写权限，请授予读写权限后再修改。\n您稍后需要选择 内部存储/MG 文件夹(/sdcard/MG)。若不存在名为 MG 的文件夹，请自行创建名为 MG 的文件夹。</string>
 
     <string name="dialog_title_warning">警告</string>
     <string name="warning_ext_gl43_enable">启用不完整的 OpenGL43 扩展可能会导致部分光影、Mods错误，请确认是否继续？</string>

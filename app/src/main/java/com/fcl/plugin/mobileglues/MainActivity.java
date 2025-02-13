@@ -7,6 +7,7 @@ import static java.sql.Types.NULL;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -19,9 +20,11 @@ import android.opengl.GLES20;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.DocumentsContract;
 import android.provider.Settings;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
@@ -49,9 +52,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class MainActivity extends ComponentActivity implements AdapterView.OnItemSelectedListener, CompoundButton.OnCheckedChangeListener {
-
+    private static final int REQUEST_CODE_SAF = 2000;
+    public static Uri MGDirectoryUri;
+    public static Context MainActivityContext;
     private MGConfig config = null;
-
     private Button openOptions;
 
     private LinearLayout optionLayout;
@@ -65,7 +69,7 @@ public class MainActivity extends ComponentActivity implements AdapterView.OnIte
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        MainActivityContext = this;
         openOptions = findViewById(R.id.open_options);
 
         inputMaxGlslCacheSize = findViewById(R.id.input_max_glsl_cache_size);
@@ -98,11 +102,11 @@ public class MainActivity extends ComponentActivity implements AdapterView.OnIte
 
     private void showOptions() {
         try {
-            config = MGConfig.loadConfig();
+            config = MGConfig.loadConfig(this);
 
-            if (config == null)
-                config = new MGConfig(0, 0, 0, 0, 0);
-
+            if (config == null) {
+                config = new MGConfig(0, 0, 0, 0, 30);
+            }
             if (config.getEnableANGLE() > 3 || config.getEnableANGLE() < 0)
                 config.setEnableANGLE(0);
             if (config.getEnableNoError() > 3 || config.getEnableNoError() < 0)
@@ -157,36 +161,50 @@ public class MainActivity extends ComponentActivity implements AdapterView.OnIte
     }
 
     private void checkPermissionSilently() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            if (Environment.isExternalStorageManager()) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            MGConfig config = MGConfig.loadConfig(this);
+            if (config != null && MGDirectoryUri != null) {
                 showOptions();
             }
         } else {
-            if (ActivityCompat.checkSelfPermission(this, READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(this, WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.checkSelfPermission(this, READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
+                    && ContextCompat.checkSelfPermission(this, WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
                 showOptions();
             }
         }
     }
 
     private void checkPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            if (Environment.isExternalStorageManager()) {
-                showOptions();
-            } else {
-                Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
-                intent.setData(Uri.parse("package:" + getPackageName()));
-                ResultListener.startActivityForResult(this, intent, 1000, (requestCode, resultCode, data) -> {
-                    if (requestCode == 1000) {
-                        if (Environment.isExternalStorageManager()) {
-                            showOptions();
-                        } else {
-                            recheckPermission();
-                        }
-                    }
-                });
-            }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle(getString(R.string.app_name))
+                    .setMessage(getString(R.string.dialog_permission_msg_android_Q))
+                    .setPositiveButton(R.string.dialog_positive, (dialog, which) -> {
+                        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+                        intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, Uri.parse(Environment.getExternalStorageDirectory() + "/MG"));
+                        ResultListener.startActivityForResult(this, intent, REQUEST_CODE_SAF, (requestCode, resultCode, data) -> {
+                            if (requestCode == REQUEST_CODE_SAF && resultCode == RESULT_OK && data != null) {
+                                Uri treeUri = data.getData();
+                                getContentResolver().takePersistableUriPermission(treeUri,
+                                        Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+
+                                MGDirectoryUri = treeUri;
+                                MGConfig config = MGConfig.loadConfig(this);
+                                if (config == null) config = new MGConfig(0, 0, 0, 0, 30);
+                                config.saveConfig(this);
+                                showOptions();
+                            }
+                        });
+                    })
+                    .setNegativeButton(R.string.dialog_negative, (dialog, which) -> {
+                        dialog.dismiss();
+                    })
+                    .create()
+                    .show();
+
         } else {
-            if (ActivityCompat.checkSelfPermission(this, READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(this, WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.checkSelfPermission(this, READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
+                    && ContextCompat.checkSelfPermission(this, WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
                 showOptions();
             } else {
                 ActivityCompat.requestPermissions(this, new String[]{WRITE_EXTERNAL_STORAGE, READ_EXTERNAL_STORAGE}, 1000);

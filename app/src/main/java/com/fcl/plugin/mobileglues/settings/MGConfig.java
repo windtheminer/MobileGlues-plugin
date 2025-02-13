@@ -1,12 +1,24 @@
 package com.fcl.plugin.mobileglues.settings;
 
+import static com.fcl.plugin.mobileglues.MainActivity.MainActivityContext;
+
+import static java.sql.Types.NULL;
+
+import android.content.Context;
+import android.net.Uri;
+import android.os.Build;
+import android.provider.DocumentsContract;
+import android.util.Log;
+
 import androidx.annotation.Nullable;
 
+import com.fcl.plugin.mobileglues.MainActivity;
 import com.fcl.plugin.mobileglues.utils.Constants;
 import com.fcl.plugin.mobileglues.utils.FileUtils;
 import com.google.gson.Gson;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.DirectoryNotEmptyException;
 import java.nio.file.Files;
@@ -76,29 +88,72 @@ public class MGConfig {
     }
     
     public int getMaxGlslCacheSize() { return maxGlslCacheSize; }
-    
+
     private void clearCacheFile() {
-        try {
-            FileUtils.deleteFile(new File(Constants.GLSL_CACHE_FILE_PATH));
-        } catch (NoSuchFileException | DirectoryNotEmptyException ignored) {
-            
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            Uri cacheUri = DocumentsContract.buildDocumentUriUsingTree(MainActivity.MGDirectoryUri,
+                    DocumentsContract.getTreeDocumentId(MainActivity.MGDirectoryUri) + "/glsl_cache.tmp");
+            try {
+                DocumentsContract.deleteDocument(MainActivityContext.getContentResolver(), cacheUri);
+            } catch (IOException | RuntimeException ignored) { }
+        } else {
+            try {
+                FileUtils.deleteFile(new File(Constants.GLSL_CACHE_FILE_PATH));
+            } catch (IOException ignored) { }
         }
     }
 
-    private void saveConfig() throws IOException {
+    public void saveConfig() throws IOException {
         String configStr = new Gson().toJson(this);
-        FileUtils.writeText(new File(Constants.CONFIG_FILE_PATH), configStr);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            if (MainActivity.MGDirectoryUri == null) {
+                throw new IOException("SAF directory not selected");
+            }
+            FileUtils.writeText(MainActivityContext, MainActivity.MGDirectoryUri, "config.json", configStr);
+        } else {
+            FileUtils.writeText(new File(Constants.CONFIG_FILE_PATH), configStr);
+        }
+    }
+    
+    public void saveConfig(Context context) {
+        try {
+            String configStr = new Gson().toJson(this);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                if (MainActivity.MGDirectoryUri == null) {
+                    throw new IOException("SAF directory not selected");
+                }
+                FileUtils.writeText(context, MainActivity.MGDirectoryUri, "config.json", configStr);
+            } else {
+                FileUtils.writeText(new File(Constants.CONFIG_FILE_PATH), configStr);
+            } 
+        } catch (RuntimeException | IOException e) {
+            Log.e("MG", "Failed to save the config file: " + e.getMessage());
+        }
     }
 
-    @Nullable
-    public static MGConfig loadConfig() throws IOException {
-        if (!Files.exists(new File(Constants.CONFIG_FILE_PATH).toPath())) {
-            Logger.getLogger("MG-Plugin").log(Level.INFO, "MG config file not found, use default.");
+    public static MGConfig loadConfig(Context context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            if (MainActivity.MGDirectoryUri != null) {
+                try {
+                    Uri configUri = DocumentsContract.buildDocumentUriUsingTree(MainActivity.MGDirectoryUri,
+                            DocumentsContract.getTreeDocumentId(MainActivity.MGDirectoryUri) + "/config.json");
+                    String configStr = FileUtils.readText(context, configUri);
+                    return new Gson().fromJson(configStr, MGConfig.class);
+                } catch (RuntimeException | IOException e) {
+                    return null;
+                }
+            }
             return null;
+        } else {
+            if (!Files.exists(new File(Constants.CONFIG_FILE_PATH).toPath())) {
+                return null;
+            }
+            try {
+                String configStr = FileUtils.readText(new File(Constants.CONFIG_FILE_PATH));
+                return new Gson().fromJson(configStr, MGConfig.class);
+            } catch (RuntimeException | IOException e) {
+                return null; 
+            }
         }
-        String configStr = FileUtils.readText(new File(Constants.CONFIG_FILE_PATH));
-        return new Gson().fromJson(configStr, MGConfig.class);
     }
 }
