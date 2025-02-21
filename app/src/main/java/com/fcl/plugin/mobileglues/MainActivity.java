@@ -179,7 +179,6 @@ public class MainActivity extends ComponentActivity implements AdapterView.OnIte
     }
 
     private void checkPermissionSilently() {
-        System.out.println("TEST");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             MGDirectoryUri = folderPermissionManager.getMGFolderUri();
 
