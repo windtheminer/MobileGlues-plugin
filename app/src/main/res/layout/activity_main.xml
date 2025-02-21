@@ -105,7 +105,7 @@
 
     </LinearLayout>
 
-    <View
+    <Space
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1" />
@@ -203,11 +203,19 @@
 
         </LinearLayout>
 
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:text="@string/clear_permission"
+            android:id="@+id/clear_permission" />
+
     </LinearLayout>
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
         android:text="@string/open_options"
         tools:visibility="gone"
         android:id="@+id/open_options" />
