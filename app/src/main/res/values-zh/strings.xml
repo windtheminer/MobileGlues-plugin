@@ -10,6 +10,8 @@
 
     <string name="open_options">修改渲染器设置</string>
 
+    <string name="clear_permission">重置使用文件夹的授权</string>
+
     <string name="option_glsl_cache">最大 GLSL 缓存大小: (MB, 输入 0 以清除并禁用 GLSL 缓存)</string>
     <string name="option_angle">启用 ANGLE 作为 OpenGL ES 驱动</string>
     <string name="option_angle_disable_if_possible">尽可能不启用</string>
@@ -41,4 +43,5 @@
     
     <string name="warning_load_failed">无法加载 MG 配置文件！</string>
     <string name="warning_save_failed">无法保存 MG 配置文件！</string>
+    <string name="warning_path_selection_error">路径错误！请选择 内部存储/MG 文件夹 (/sdcard/MG)，但您选择了：\n%s</string>
 </resources>

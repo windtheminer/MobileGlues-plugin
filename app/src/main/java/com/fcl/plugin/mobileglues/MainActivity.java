@@ -24,7 +24,6 @@ import android.provider.DocumentsContract;
 import android.provider.Settings;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
@@ -44,8 +43,11 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.fcl.plugin.mobileglues.settings.MGConfig;
+import com.fcl.plugin.mobileglues.settings.FolderPermissionManager;
+import com.fcl.plugin.mobileglues.utils.Constants;
 import com.fcl.plugin.mobileglues.utils.ResultListener;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -56,6 +58,7 @@ public class MainActivity extends ComponentActivity implements AdapterView.OnIte
     public static Uri MGDirectoryUri;
     public static Context MainActivityContext;
     private MGConfig config = null;
+    private FolderPermissionManager folderPermissionManager;
     private Button openOptions;
 
     private LinearLayout optionLayout;
@@ -69,8 +72,10 @@ public class MainActivity extends ComponentActivity implements AdapterView.OnIte
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        folderPermissionManager = new FolderPermissionManager(this);
         MainActivityContext = this;
         openOptions = findViewById(R.id.open_options);
+        Button clearPermission = findViewById(R.id.clear_permission);
 
         inputMaxGlslCacheSize = findViewById(R.id.input_max_glsl_cache_size);
         optionLayout = findViewById(R.id.option_layout);
@@ -96,7 +101,15 @@ public class MainActivity extends ComponentActivity implements AdapterView.OnIte
         noErrorSpinner.setAdapter(noErrorAdapter);
 
         openOptions.setOnClickListener(view -> checkPermission());
+        clearPermission.setOnClickListener(view -> {
+            folderPermissionManager.clearAllPermissions();
+            checkPermissionSilently();
+        });
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
         checkPermissionSilently();
     }
 
@@ -160,16 +173,27 @@ public class MainActivity extends ComponentActivity implements AdapterView.OnIte
         }
     }
 
+    private void hideOptions() {
+        openOptions.setVisibility(View.VISIBLE);
+        optionLayout.setVisibility(View.GONE);
+    }
+
     private void checkPermissionSilently() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            MGDirectoryUri = folderPermissionManager.getMGFolderUri();
+
             MGConfig config = MGConfig.loadConfig(this);
             if (config != null && MGDirectoryUri != null) {
                 showOptions();
+            } else {
+                hideOptions();
             }
         } else {
             if (ActivityCompat.checkSelfPermission(this, READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
                     && ContextCompat.checkSelfPermission(this, WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
                 showOptions();
+            } else {
+                hideOptions();
             }
         }
     }
@@ -185,6 +209,22 @@ public class MainActivity extends ComponentActivity implements AdapterView.OnIte
                         ResultListener.startActivityForResult(this, intent, REQUEST_CODE_SAF, (requestCode, resultCode, data) -> {
                             if (requestCode == REQUEST_CODE_SAF && resultCode == RESULT_OK && data != null) {
                                 Uri treeUri = data.getData();
+                                if (treeUri == null) {
+                                    hideOptions();
+                                    return;
+                                }
+
+                                if (!folderPermissionManager.isUriMatchingFilePath(treeUri, new File(Constants.MG_DIRECTORY))) {
+                                    new AlertDialog.Builder(this)
+                                            .setTitle(R.string.app_name)
+                                            .setMessage(getString(R.string.warning_path_selection_error, folderPermissionManager.getFileByUri(treeUri)))
+                                            .setPositiveButton(R.string.dialog_positive, null)
+                                            .create()
+                                            .show();
+                                    hideOptions();
+                                    return;
+                                }
+
                                 getContentResolver().takePersistableUriPermission(treeUri,
                                         Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
 
@@ -201,13 +241,13 @@ public class MainActivity extends ComponentActivity implements AdapterView.OnIte
                     })
                     .create()
                     .show();
-
         } else {
             if (ActivityCompat.checkSelfPermission(this, READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
                     && ContextCompat.checkSelfPermission(this, WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
                 showOptions();
             } else {
                 ActivityCompat.requestPermissions(this, new String[]{WRITE_EXTERNAL_STORAGE, READ_EXTERNAL_STORAGE}, 1000);
+                hideOptions();
             }
         }
     }
