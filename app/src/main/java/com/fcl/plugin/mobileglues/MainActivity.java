@@ -61,15 +61,15 @@ public class MainActivity extends ComponentActivity implements AdapterView.OnIte
     public static Context MainActivityContext;
     private MGConfig config = null;
     private FolderPermissionManager folderPermissionManager;
-    private Button openOptions;
+    private Boolean State = true;
 
+    private Button openOptions;
     private ConstraintLayout optionLayout;
     private Spinner angleSpinner;
     private Spinner noErrorSpinner;
     private Switch extGL43Switch;
     private Switch extCsSwitch;
     private EditText inputMaxGlslCacheSize;
-    private Boolean State;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
