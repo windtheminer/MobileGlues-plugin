@@ -12,7 +12,8 @@
         android:layout_width="wrap_content"
         app:barrierDirection="end"
         app:constraint_referenced_ids="text_view_name, text_view_version, text_view_author, text_view_launcher, text_view_copyright"
-        android:id="@+id/end_barrier" />
+        android:id="@+id/end_barrier"
+        app:barrierMargin="10dp" />
 
     <TextView
         android:layout_height="wrap_content"
@@ -29,7 +30,6 @@
         app:layout_constraintStart_toEndOf="@+id/end_barrier"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBaseline_toBaselineOf="@+id/text_view_name"
-        android:layout_marginStart="8dp"
         android:id="@+id/text_info_name"
         android:text="@string/info_name" />
 
@@ -48,7 +48,6 @@
         app:layout_constraintStart_toEndOf="@+id/end_barrier"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBaseline_toBaselineOf="@+id/text_view_version"
-        android:layout_marginStart="8dp"
         android:id="@+id/info_version" />
 
     <TextView
@@ -66,7 +65,6 @@
         app:layout_constraintStart_toEndOf="@+id/end_barrier"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBaseline_toBaselineOf="@+id/text_view_author"
-        android:layout_marginStart="8dp"
         android:id="@+id/text_info_author"
         android:text="@string/info_author" />
 
@@ -85,7 +83,6 @@
         app:layout_constraintStart_toEndOf="@+id/end_barrier"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBaseline_toBaselineOf="@+id/text_view_launcher"
-        android:layout_marginStart="8dp"
         android:id="@+id/text_info_launcher"
         android:text="@string/info_launcher" />
 
@@ -104,29 +101,25 @@
         app:layout_constraintStart_toEndOf="@+id/end_barrier"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBaseline_toBaselineOf="@+id/text_view_copyright"
-        android:layout_marginStart="8dp"
         android:id="@+id/text_info_copyright"
         android:text="@string/info_copyright" />
 
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1" />
-
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/option_layout"
         android:visibility="gone"
         tools:visibility="visible"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:orientation="vertical">
+        android:padding="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/open_options">
 
         <TextView
+            android:id="@+id/text_option_glsl_cache"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/option_glsl_cache"
-            android:layout_margin="5dp" />
+            android:layout_margin="5dp"
+            app:layout_constraintBottom_toTopOf="@+id/input_max_glsl_cache_size" />
 
         <EditText
             android:id="@+id/input_max_glsl_cache_size"
@@ -135,91 +128,91 @@
             android:layout_margin="5dp"
             android:autofillHints=""
             android:inputType="number"
-            tools:ignore="LabelFor" />
+            tools:ignore="LabelFor"
+            app:layout_constraintBottom_toTopOf="@+id/text_option_angle" />
 
         <TextView
+            android:id="@+id/text_option_angle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/option_angle"
-            android:layout_margin="5dp" />
+            android:layout_margin="5dp"
+            app:layout_constraintBottom_toTopOf="@+id/spinner_angle" />
 
         <Spinner
             android:id="@+id/spinner_angle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="5dp" />
+            android:layout_margin="5dp"
+            app:layout_constraintBottom_toTopOf="@+id/text_option_no_error" />
 
         <TextView
+            android:id="@+id/text_option_no_error"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/option_no_error"
-            android:layout_margin="5dp" />
+            android:layout_margin="5dp"
+            app:layout_constraintBottom_toTopOf="@+id/spinner_no_error" />
 
         <Spinner
             android:id="@+id/spinner_no_error"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="5dp" />
+            android:layout_margin="5dp"
+            app:layout_constraintBottom_toTopOf="@+id/layout_option_ext_gl43" />
 
         <LinearLayout
+            android:id="@+id/layout_option_ext_gl43"
             android:layout_marginBottom="5dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toTopOf="@+id/layout_option_ext_cs">
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:text="@string/option_ext_gl43"
                 android:layout_gravity="center"
-                android:layout_weight="1"
-                android:layout_margin="5dp" />
+                android:layout_weight="1" />
 
             <Switch
                 android:id="@+id/switch_ext_gl43"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_margin="5dp" />
+                android:layout_gravity="center" />
 
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/layout_option_ext_cs"
             android:layout_marginBottom="5dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="parent">
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:text="@string/option_ext_cs"
                 android:layout_gravity="center"
-                android:layout_weight="1"
-                android:layout_margin="5dp" />
+                android:layout_weight="1" />
 
             <Switch
                 android:id="@+id/switch_ext_cs"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_margin="5dp" />
+                android:layout_gravity="center" />
 
         </LinearLayout>
 
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:text="@string/clear_permission"
-            android:id="@+id/clear_permission" />
-
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
+        android:layout_marginBottom="6dp"
         android:text="@string/open_options"
         tools:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
