@@ -91,5 +91,6 @@ dependencies {
     implementation(libs.androidx.documentfile)
     implementation(libs.gson)
     implementation(libs.androidx.activity.compose)
-    implementation(project(":MobileGlues"))
+    implementation(libs.constraintlayout)
+    //implementation(project(":MobileGlues"))
 }
