@@ -153,8 +153,8 @@ public class MainActivity extends ComponentActivity implements AdapterView.OnIte
                     if (!text.isEmpty()) {
                         try {
                             int number = Integer.parseInt(text);
-                            if (number < 0) {
-                                inputMaxGlslCacheSize.setError("Error: number cannot be less than 0.");
+                            if (number < -1 || number == 0) {
+                                inputMaxGlslCacheSize.setError("Error: number cannot be 0 or less than -1.");
                             }
                             config.setMaxGlslCacheSize(number);
                         } catch (NumberFormatException e) {
