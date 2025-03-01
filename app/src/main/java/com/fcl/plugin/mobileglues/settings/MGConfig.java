@@ -43,9 +43,9 @@ public class MGConfig {
     }
 
     public void setMaxGlslCacheSize(int maxGlslCacheSize) throws IOException {
-        if (maxGlslCacheSize < 0)
+        if (maxGlslCacheSize < -1 || maxGlslCacheSize == 0)
             return;
-        if (maxGlslCacheSize == 0)
+        if (maxGlslCacheSize == -1)
             clearCacheFile();
         this.maxGlslCacheSize = maxGlslCacheSize;
         saveConfig();

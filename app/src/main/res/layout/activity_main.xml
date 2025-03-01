@@ -130,7 +130,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
             android:autofillHints=""
-            android:inputType="number"
+            android:inputType="numberSigned"
             tools:ignore="LabelFor" />
 
         <TextView
