@@ -2,15 +2,11 @@ package com.fcl.plugin.mobileglues.settings;
 
 import static com.fcl.plugin.mobileglues.MainActivity.MainActivityContext;
 
-import static java.sql.Types.NULL;
-
 import android.content.Context;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.DocumentsContract;
 import android.util.Log;
-
-import androidx.annotation.Nullable;
 
 import com.fcl.plugin.mobileglues.MainActivity;
 import com.fcl.plugin.mobileglues.utils.Constants;
@@ -18,13 +14,8 @@ import com.fcl.plugin.mobileglues.utils.FileUtils;
 import com.google.gson.Gson;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.file.DirectoryNotEmptyException;
 import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class MGConfig {
 
