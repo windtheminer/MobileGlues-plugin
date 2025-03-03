@@ -36,7 +36,7 @@ android {
     buildTypes {
         release {
             signingConfig = signingConfigs.getByName("release")
-            isMinifyEnabled = false
+            isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -89,5 +89,6 @@ dependencies {
     implementation(libs.androidx.documentfile)
     implementation(libs.gson)
     implementation(libs.androidx.activity)
+    implementation(libs.constraintlayout)
     implementation(project(":MobileGlues"))
 }

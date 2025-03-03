@@ -31,7 +31,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -42,6 +41,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.fcl.plugin.mobileglues.settings.MGConfig;
 import com.fcl.plugin.mobileglues.settings.FolderPermissionManager;
@@ -61,9 +61,10 @@ public class MainActivity extends ComponentActivity implements AdapterView.OnIte
     public static Context MainActivityContext;
     private MGConfig config = null;
     private FolderPermissionManager folderPermissionManager;
-    private Button openOptions;
+    private Boolean State = true;
 
-    private LinearLayout optionLayout;
+    private Button openOptions;
+    private ConstraintLayout optionLayout;
     private Spinner angleSpinner;
     private Spinner noErrorSpinner;
     private Switch extGL43Switch;
@@ -77,7 +78,6 @@ public class MainActivity extends ComponentActivity implements AdapterView.OnIte
         folderPermissionManager = new FolderPermissionManager(this);
         MainActivityContext = this;
         openOptions = findViewById(R.id.open_options);
-        Button clearPermission = findViewById(R.id.clear_permission);
         TextView infoVersion = findViewById(R.id.info_version);
 
         inputMaxGlslCacheSize = findViewById(R.id.input_max_glsl_cache_size);
@@ -105,10 +105,13 @@ public class MainActivity extends ComponentActivity implements AdapterView.OnIte
 
         infoVersion.setText(BuildConfig.VERSION_NAME);
 
-        openOptions.setOnClickListener(view -> checkPermission());
-        clearPermission.setOnClickListener(view -> {
-            folderPermissionManager.clearAllPermissions();
-            checkPermissionSilently();
+        openOptions.setOnClickListener(view -> {
+            if (State) {
+                checkPermission();
+            } else {
+                folderPermissionManager.clearAllPermissions();
+                checkPermissionSilently();
+            }
         });
     }
 
@@ -169,8 +172,8 @@ public class MainActivity extends ComponentActivity implements AdapterView.OnIte
                 @Override
                 public void onTextChanged(CharSequence charSequence, int start, int before, int after) {}
             });
-
-            openOptions.setVisibility(View.GONE);
+            State = false;
+            openOptions.setText(getString(R.string.clear_permission));
             optionLayout.setVisibility(View.VISIBLE);
         } catch (IOException e) {
             Logger.getLogger("MG").log(Level.SEVERE, "Failed to load config! Exception: ", e.getCause());
@@ -179,7 +182,8 @@ public class MainActivity extends ComponentActivity implements AdapterView.OnIte
     }
 
     private void hideOptions() {
-        openOptions.setVisibility(View.VISIBLE);
+        State = true;
+        openOptions.setText(getString(R.string.open_options));
         optionLayout.setVisibility(View.GONE);
     }
 
