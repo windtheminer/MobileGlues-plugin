@@ -1,18 +1,17 @@
 package com.fcl.plugin.mobileglues.utils;
 
-import static com.fcl.plugin.mobileglues.MainActivity.MainActivityContext;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.DocumentsContract;
 
-import com.fcl.plugin.mobileglues.MainActivity;
 
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -35,37 +34,31 @@ public class FileUtils {
     }
 
     public static void writeText(Context context, Uri directoryUri, String fileName, String text) throws IOException {
-        Uri fileUri = DocumentsContract.buildDocumentUriUsingTree(directoryUri,
-                DocumentsContract.getTreeDocumentId(directoryUri) + "/" + fileName);
-        // Delete file
-        try {
-            DocumentsContract.deleteDocument(MainActivityContext.getContentResolver(), fileUri);
-        } catch (IOException | RuntimeException ignored) { }
-        
-        try (OutputStream out = context.getContentResolver().openOutputStream(fileUri, "w")) {
-            if (out == null) {
-                throw new IOException("Failed to open output stream for: " + fileName);
-            }out.write(text.getBytes(StandardCharsets.UTF_8));
-        } catch (RuntimeException | IOException e) {
-            final String baseDocId = DocumentsContract.getTreeDocumentId(directoryUri);
-            final Uri dirUri = DocumentsContract.buildDocumentUriUsingTree(directoryUri, baseDocId);
-            fileUri = DocumentsContract.createDocument(
-                    context.getContentResolver(),
-                    dirUri,
-                    "application/octet-stream",
-                    fileName);
+        final ContentResolver resolver = context.getContentResolver();
+        final String baseDocId = DocumentsContract.getTreeDocumentId(directoryUri);
+        final Uri fileUri = DocumentsContract.buildDocumentUriUsingTree(directoryUri, baseDocId + "/" + fileName);
 
-            if (fileUri == null) {
-                fileUri = DocumentsContract.buildDocumentUriUsingTree(
-                        directoryUri,
-                        baseDocId + "/" + fileName);
-            }
-            try (OutputStream out = context.getContentResolver().openOutputStream(fileUri, "w")) {
-                if (out == null) {
-                    throw new IOException("Failed to open output stream for: " + fileName);
-                }
-                out.write(text.getBytes(StandardCharsets.UTF_8));
-            }
+        try (OutputStream out = resolver.openOutputStream(fileUri, "wt");
+             BufferedOutputStream bufferedOut = new BufferedOutputStream(out)) {
+            bufferedOut.write(text.getBytes(StandardCharsets.UTF_8));
+            return;
+        } catch (IOException | RuntimeException e) {
+//            e.printStackTrace();
+        }
+
+        Uri newFileUri = DocumentsContract.createDocument(
+                resolver,
+                directoryUri,
+                "text/plain",
+                fileName);
+
+        if (newFileUri == null) {
+            throw new IOException("Failed to create document: " + fileName);
+        }
+
+        try (OutputStream out = resolver.openOutputStream(newFileUri, "wt");
+             BufferedOutputStream bufferedOut = new BufferedOutputStream(out)) {
+            bufferedOut.write(text.getBytes(StandardCharsets.UTF_8));
         }
     }
 

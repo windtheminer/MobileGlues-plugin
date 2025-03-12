@@ -95,30 +95,26 @@ public class MGConfig {
     }
 
     public void saveConfig() throws IOException {
+        save(MainActivityContext);
+    }
+    
+    public void saveConfig(Context context) {
+        try {
+            save(context);
+        } catch (RuntimeException | IOException e) {
+            Log.e("MG", "Failed to save the config file: " + e.getMessage());
+        }
+    }
+
+    private void save(Context context) throws IOException {
         String configStr = new Gson().toJson(this);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             if (MainActivity.MGDirectoryUri == null) {
                 throw new IOException("SAF directory not selected");
             }
-            FileUtils.writeText(MainActivityContext, MainActivity.MGDirectoryUri, "config.json", configStr);
+            FileUtils.writeText(context, MainActivity.MGDirectoryUri, "config.json", configStr);
         } else {
             FileUtils.writeText(new File(Constants.CONFIG_FILE_PATH), configStr);
-        }
-    }
-    
-    public void saveConfig(Context context) {
-        try {
-            String configStr = new Gson().toJson(this);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                if (MainActivity.MGDirectoryUri == null) {
-                    throw new IOException("SAF directory not selected");
-                }
-                FileUtils.writeText(context, MainActivity.MGDirectoryUri, "config.json", configStr);
-            } else {
-                FileUtils.writeText(new File(Constants.CONFIG_FILE_PATH), configStr);
-            } 
-        } catch (RuntimeException | IOException e) {
-            Log.e("MG", "Failed to save the config file: " + e.getMessage());
         }
     }
 

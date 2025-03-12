@@ -37,7 +37,7 @@
 
     <string name="dialog_permission_title">Info</string>
     <string name="dialog_permission_msg">Modifying rendering options requires read and write permissions. Please grant read and write permissions before modifying.</string>
-    <string name="dialog_permission_msg_android_Q">Modifying rendering options requires read and write permissions. Please grant read and write permissions before making changes.\nYou will need to select the "Internal Storage/MG" folder (/sdcard/MG) later. If the MG folder does not exist, please create it yourself.</string>
+    <string name="dialog_permission_msg_android_Q">Modifying rendering options requires read and write permissions. Please grant read and write permissions before making changes.\nYou will need to select this directory later: \n%s\nIf a folder named MG does not exist, please create one manually.</string>
 
     <string name="dialog_title_warning">Warning</string>
     <string name="warning_ext_gl43_enable">Enabling the incomplete OpenGL43 extension may cause issues with some shaders and mods. Are you sure you want to continue?</string>
@@ -47,5 +47,5 @@
 
     <string name="warning_load_failed">Failed to load MG config!</string>
     <string name="warning_save_failed">Failed to save MG config!</string>
-    <string name="warning_path_selection_error">Path error! Please select the Internal Storage/MG folder (/sdcard/MG), but you selected:\n%s</string>
+    <string name="warning_path_selection_error">Path error! Please select: \n%s\nbut you selected:\n%s</string>
 </resources>
