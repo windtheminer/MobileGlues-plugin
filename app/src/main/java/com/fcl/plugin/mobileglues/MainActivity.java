@@ -42,7 +42,6 @@ import com.fcl.plugin.mobileglues.settings.MGConfig;
 import com.fcl.plugin.mobileglues.settings.FolderPermissionManager;
 import com.fcl.plugin.mobileglues.utils.Constants;
 import com.fcl.plugin.mobileglues.utils.ResultListener;
-import com.fcl.plugin.mobileglues.BuildConfig;
 
 import java.io.File;
 import java.io.IOException;
@@ -191,7 +190,7 @@ public class MainActivity extends ComponentActivity implements AdapterView.OnIte
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle(getString(R.string.app_name))
-                    .setMessage(getString(R.string.dialog_permission_msg_android_Q))
+                    .setMessage(getString(R.string.dialog_permission_msg_android_Q, Constants.MG_DIRECTORY))
                     .setPositiveButton(R.string.dialog_positive, (dialog, which) -> {
                         Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
                         intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, Uri.parse(Environment.getExternalStorageDirectory() + "/MG"));
@@ -206,7 +205,7 @@ public class MainActivity extends ComponentActivity implements AdapterView.OnIte
                                 if (!folderPermissionManager.isUriMatchingFilePath(treeUri, new File(Constants.MG_DIRECTORY))) {
                                     new AlertDialog.Builder(this)
                                             .setTitle(R.string.app_name)
-                                            .setMessage(getString(R.string.warning_path_selection_error, folderPermissionManager.getFileByUri(treeUri)))
+                                            .setMessage(getString(R.string.warning_path_selection_error, Constants.MG_DIRECTORY, folderPermissionManager.getFileByUri(treeUri)))
                                             .setPositiveButton(R.string.dialog_positive, null)
                                             .create()
                                             .show();
