@@ -89,7 +89,8 @@ android {
 dependencies {
     implementation(libs.androidx.documentfile)
     implementation(libs.gson)
-    implementation(libs.androidx.activity)
+    implementation(libs.appcompat)
     implementation(libs.constraintlayout)
+    implementation(libs.google.material)
     implementation(project(":MobileGlues"))
 }
