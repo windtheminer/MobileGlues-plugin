@@ -2,13 +2,10 @@ package com.fcl.plugin.mobileglues;
 
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
-
 import static java.sql.Types.NULL;
 
 import android.Manifest;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -31,17 +28,19 @@ import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
 import android.widget.Toast;
 
-import androidx.activity.ComponentActivity;
+import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.fcl.plugin.mobileglues.databinding.ActivityMainBinding;
-import com.fcl.plugin.mobileglues.settings.MGConfig;
 import com.fcl.plugin.mobileglues.settings.FolderPermissionManager;
+import com.fcl.plugin.mobileglues.settings.MGConfig;
 import com.fcl.plugin.mobileglues.utils.Constants;
 import com.fcl.plugin.mobileglues.utils.ResultListener;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.io.File;
 import java.io.IOException;
@@ -49,7 +48,7 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class MainActivity extends ComponentActivity implements AdapterView.OnItemSelectedListener, CompoundButton.OnCheckedChangeListener {
+public class MainActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener, CompoundButton.OnCheckedChangeListener {
     private static final int REQUEST_CODE_SAF = 2000;
     public static Uri MGDirectoryUri;
     public static Context MainActivityContext;
@@ -60,6 +59,7 @@ public class MainActivity extends ComponentActivity implements AdapterView.OnIte
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -105,16 +105,16 @@ public class MainActivity extends ComponentActivity implements AdapterView.OnIte
             config = MGConfig.loadConfig(this);
 
             if (config == null) {
-                config = new MGConfig(0, 0, 0, 0, 30);
+                config = new MGConfig(0, 0, 0, 0, 24);
             }
             if (config.getEnableANGLE() > 3 || config.getEnableANGLE() < 0)
                 config.setEnableANGLE(0);
             if (config.getEnableNoError() > 3 || config.getEnableNoError() < 0)
                 config.setEnableNoError(0);
-            
+
             if (config.getMaxGlslCacheSize() == NULL)
-                config.setMaxGlslCacheSize(30);
-            
+                config.setMaxGlslCacheSize(24);
+
             binding.inputMaxGlslCacheSize.setText(String.valueOf(config.getMaxGlslCacheSize()));
             binding.spinnerAngle.setSelection(config.getEnableANGLE());
             binding.spinnerNoError.setSelection(config.getEnableNoError());
@@ -128,28 +128,39 @@ public class MainActivity extends ComponentActivity implements AdapterView.OnIte
             binding.inputMaxGlslCacheSize.addTextChangedListener(new TextWatcher() {
                 @Override
                 public void afterTextChanged(Editable s) {
-                    String text = s.toString();
+                    String text = s.toString().trim();
                     if (!text.isEmpty()) {
                         try {
                             int number = Integer.parseInt(text);
                             if (number < -1 || number == 0) {
-                                binding.inputMaxGlslCacheSize.setError("Error: number cannot be 0 or less than -1.");
+                                binding.inputMaxGlslCacheSizeLayout.setError(getString(R.string.option_glsl_cache_error_range));
+                            } else {
+                                binding.inputMaxGlslCacheSizeLayout.setError(null);
+                                config.setMaxGlslCacheSize(number);
                             }
-                            config.setMaxGlslCacheSize(number);
                         } catch (NumberFormatException e) {
-                            binding.inputMaxGlslCacheSize.setError("Error: invalid number.");
+                            binding.inputMaxGlslCacheSizeLayout.setError(getString(R.string.option_glsl_cache_error_invalid));
                         } catch (IOException e) {
-                            binding.inputMaxGlslCacheSize.setError("Error: unexpected error.");
+                            binding.inputMaxGlslCacheSizeLayout.setError(getString(R.string.option_glsl_cache_error_unexpected));
+                            throw new RuntimeException(e);
+                        }
+                    } else {
+                        binding.inputMaxGlslCacheSizeLayout.setError(null);
+                        try {
+                            config.setMaxGlslCacheSize(24);
+                        } catch (IOException e) {
                             throw new RuntimeException(e);
                         }
                     }
                 }
 
                 @Override
-                public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {}
+                public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {
+                }
 
                 @Override
-                public void onTextChanged(CharSequence charSequence, int start, int before, int after) {}
+                public void onTextChanged(CharSequence charSequence, int start, int before, int after) {
+                }
             });
             State = false;
             binding.openOptions.setText(getString(R.string.clear_permission));
@@ -187,49 +198,44 @@ public class MainActivity extends ComponentActivity implements AdapterView.OnIte
     }
 
     private void checkPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle(getString(R.string.app_name))
-                    .setMessage(getString(R.string.dialog_permission_msg_android_Q, Constants.MG_DIRECTORY))
-                    .setPositiveButton(R.string.dialog_positive, (dialog, which) -> {
-                        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
-                        intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, Uri.parse(Environment.getExternalStorageDirectory() + "/MG"));
-                        ResultListener.startActivityForResult(this, intent, REQUEST_CODE_SAF, (requestCode, resultCode, data) -> {
-                            if (requestCode == REQUEST_CODE_SAF && resultCode == RESULT_OK && data != null) {
-                                Uri treeUri = data.getData();
-                                if (treeUri == null) {
-                                    hideOptions();
-                                    return;
-                                }
-
-                                if (!folderPermissionManager.isUriMatchingFilePath(treeUri, new File(Constants.MG_DIRECTORY))) {
-                                    new AlertDialog.Builder(this)
-                                            .setTitle(R.string.app_name)
-                                            .setMessage(getString(R.string.warning_path_selection_error, Constants.MG_DIRECTORY, folderPermissionManager.getFileByUri(treeUri)))
-                                            .setPositiveButton(R.string.dialog_positive, null)
-                                            .create()
-                                            .show();
-                                    hideOptions();
-                                    return;
-                                }
-
-                                getContentResolver().takePersistableUriPermission(treeUri,
-                                        Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-
-                                MGDirectoryUri = treeUri;
-                                MGConfig config = MGConfig.loadConfig(this);
-                                if (config == null) config = new MGConfig(0, 0, 0, 0, 30);
-                                config.saveConfig(this);
-                                showOptions();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) new MaterialAlertDialogBuilder(this)
+                .setTitle(getString(R.string.app_name))
+                .setMessage(getString(R.string.dialog_permission_msg_android_Q, Constants.MG_DIRECTORY))
+                .setPositiveButton(R.string.dialog_positive, (dialog, which) -> {
+                    Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+                    intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, Uri.parse(Environment.getExternalStorageDirectory() + "/MG"));
+                    ResultListener.startActivityForResult(this, intent, REQUEST_CODE_SAF, (requestCode, resultCode, data) -> {
+                        if (requestCode == REQUEST_CODE_SAF && resultCode == RESULT_OK && data != null) {
+                            Uri treeUri = data.getData();
+                            if (treeUri == null) {
+                                hideOptions();
+                                return;
                             }
-                        });
-                    })
-                    .setNegativeButton(R.string.dialog_negative, (dialog, which) -> {
-                        dialog.dismiss();
-                    })
-                    .create()
-                    .show();
-        } else {
+
+                            if (!folderPermissionManager.isUriMatchingFilePath(treeUri, new File(Constants.MG_DIRECTORY))) {
+                                new MaterialAlertDialogBuilder(this)
+                                        .setTitle(R.string.app_name)
+                                        .setMessage(getString(R.string.warning_path_selection_error, Constants.MG_DIRECTORY, folderPermissionManager.getFileByUri(treeUri)))
+                                        .setPositiveButton(R.string.dialog_positive, null)
+                                        .show();
+                                hideOptions();
+                                return;
+                            }
+
+                            getContentResolver().takePersistableUriPermission(treeUri,
+                                    Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+
+                            MGDirectoryUri = treeUri;
+                            MGConfig config = MGConfig.loadConfig(this);
+                            if (config == null) config = new MGConfig(0, 0, 0, 0, 24);
+                            config.saveConfig(this);
+                            showOptions();
+                        }
+                    });
+                })
+                .setNegativeButton(R.string.dialog_negative, (dialog, which) -> dialog.dismiss())
+                .show();
+        else {
             if (ActivityCompat.checkSelfPermission(this, READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
                     && ContextCompat.checkSelfPermission(this, WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
                 showOptions();
@@ -240,43 +246,23 @@ public class MainActivity extends ComponentActivity implements AdapterView.OnIte
         }
     }
 
-    private void recheckPermission() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setCancelable(false);
-        builder.setTitle(getString(R.string.dialog_permission_title));
-        builder.setMessage(getString(R.string.dialog_permission_msg));
-        builder.setPositiveButton(R.string.dialog_positive, (dialogInterface, i) -> checkPermission());
-        builder.setNegativeButton(R.string.dialog_negative, (dialogInterface, i) -> {
-            // Do nothing here.
-        });
-        builder.create().show();
-    }
-
     @Override
     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
         if (adapterView == binding.spinnerAngle && config != null) {
             try {
                 if (i == 3 && isAdreno740()) {
-                    new AlertDialog.Builder(this)
+                    new MaterialAlertDialogBuilder(this)
                             .setTitle(getString(R.string.dialog_title_warning))
                             .setMessage(getString(R.string.warning_adreno_740_angle))
-                            .setPositiveButton(getString(R.string.dialog_positive), new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    try {
-                                        config.setEnableANGLE(i);
-                                    } catch (IOException e) {
-                                        Logger.getLogger("MG").log(Level.SEVERE, "Failed to save config! Exception: ", e);
-                                        Toast.makeText(MainActivity.this, getString(R.string.warning_save_failed), Toast.LENGTH_SHORT).show();
-                                    }
+                            .setPositiveButton(getString(R.string.dialog_positive), (dialog, which) -> {
+                                try {
+                                    config.setEnableANGLE(i);
+                                } catch (IOException e) {
+                                    Logger.getLogger("MG").log(Level.SEVERE, "Failed to save config! Exception: ", e);
+                                    Toast.makeText(MainActivity.this, getString(R.string.warning_save_failed), Toast.LENGTH_SHORT).show();
                                 }
                             })
-                            .setNegativeButton(getString(R.string.dialog_negative), new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    binding.spinnerAngle.setSelection(config.getEnableANGLE());
-                                }
-                            })
+                            .setNegativeButton(getString(R.string.dialog_negative), (dialog, which) -> binding.spinnerAngle.setSelection(config.getEnableANGLE()))
                             .show();
                 } else {
                     config.setEnableANGLE(i);
@@ -286,7 +272,7 @@ public class MainActivity extends ComponentActivity implements AdapterView.OnIte
                 Toast.makeText(this, getString(R.string.warning_save_failed), Toast.LENGTH_SHORT).show();
             }
         }
-        
+
         if (adapterView == binding.spinnerNoError && config != null) {
             try {
                 config.setEnableNoError(i);
@@ -306,33 +292,20 @@ public class MainActivity extends ComponentActivity implements AdapterView.OnIte
     public void onCheckedChanged(final CompoundButton compoundButton, final boolean isChecked) {
         if (compoundButton == binding.switchExtGl43 && config != null) {
             if (isChecked) {
-                new AlertDialog.Builder(MainActivity.this)
+                new MaterialAlertDialogBuilder(MainActivity.this)
                         .setTitle(getString(R.string.dialog_title_warning))
                         .setMessage(getString(R.string.warning_ext_gl43_enable))
                         .setCancelable(false)
-                        .setOnKeyListener(new DialogInterface.OnKeyListener() {
-                            @Override
-                            public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
-                                return keyCode == KeyEvent.KEYCODE_BACK;
+                        .setOnKeyListener((dialog, keyCode, event) -> keyCode == KeyEvent.KEYCODE_BACK)
+                        .setPositiveButton(getString(R.string.dialog_positive), (dialog, which) -> {
+                            try {
+                                config.setEnableExtGL43(1);
+                            } catch (IOException e) {
+                                Logger.getLogger("MG").log(Level.SEVERE, "Failed to save config! Exception: ", e);
+                                Toast.makeText(MainActivity.this, getString(R.string.warning_save_failed), Toast.LENGTH_SHORT).show();
                             }
                         })
-                        .setPositiveButton(getString(R.string.dialog_positive), new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                try {
-                                    config.setEnableExtGL43(1);
-                                } catch (IOException e) {
-                                    Logger.getLogger("MG").log(Level.SEVERE, "Failed to save config! Exception: ", e);
-                                    Toast.makeText(MainActivity.this, getString(R.string.warning_save_failed), Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        })
-                        .setNegativeButton(getString(R.string.dialog_negative), new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                binding.switchExtGl43.setChecked(false);
-                            }
-                        })
+                        .setNegativeButton(getString(R.string.dialog_negative), (dialog, which) -> binding.switchExtGl43.setChecked(false))
                         .show();
             } else {
                 try {
@@ -345,32 +318,19 @@ public class MainActivity extends ComponentActivity implements AdapterView.OnIte
         }
         if (compoundButton == binding.switchExtCs && config != null) {
             if (isChecked) {
-                new AlertDialog.Builder(MainActivity.this)
+                new MaterialAlertDialogBuilder(MainActivity.this)
                         .setTitle(getString(R.string.dialog_title_warning))
                         .setMessage(getString(R.string.warning_ext_cs_enable)).setCancelable(false)
-                        .setOnKeyListener(new DialogInterface.OnKeyListener() {
-                            @Override
-                            public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
-                                return keyCode == KeyEvent.KEYCODE_BACK;
+                        .setOnKeyListener((dialog, keyCode, event) -> keyCode == KeyEvent.KEYCODE_BACK)
+                        .setPositiveButton(getString(R.string.dialog_positive), (dialog, which) -> {
+                            try {
+                                config.setEnableExtComputeShader(1);
+                            } catch (IOException e) {
+                                Logger.getLogger("MG").log(Level.SEVERE, "Failed to save config! Exception: ", e);
+                                Toast.makeText(MainActivity.this, getString(R.string.warning_save_failed), Toast.LENGTH_SHORT).show();
                             }
                         })
-                        .setPositiveButton(getString(R.string.dialog_positive), new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                try {
-                                    config.setEnableExtComputeShader(1);
-                                } catch (IOException e) {
-                                    Logger.getLogger("MG").log(Level.SEVERE, "Failed to save config! Exception: ", e);
-                                    Toast.makeText(MainActivity.this, getString(R.string.warning_save_failed), Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        })
-                        .setNegativeButton(getString(R.string.dialog_negative), new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                binding.switchExtCs.setChecked(false);
-                            }
-                        })
+                        .setNegativeButton(getString(R.string.dialog_negative), (dialog, which) -> binding.switchExtCs.setChecked(false))
                         .show();
             } else {
                 try {
@@ -382,6 +342,7 @@ public class MainActivity extends ComponentActivity implements AdapterView.OnIte
             }
         }
     }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);

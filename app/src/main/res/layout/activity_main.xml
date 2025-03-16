@@ -1,236 +1,212 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_height="match_parent"
     android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
     tools:context=".MainActivity">
 
-    <androidx.core.widget.NestedScrollView
-        android:layout_height="0dp"
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/option_layout">
+        android:layout_height="wrap_content"
+        android:fitsSystemWindows="true"
+        app:liftOnScroll="true">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:title="@string/app_name"
+            app:titleCentered="true" />
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
             <androidx.constraintlayout.widget.Barrier
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
-                app:barrierDirection="end"
-                app:constraint_referenced_ids="text_view_name, text_view_version, text_view_author, text_view_launcher, text_view_copyright"
                 android:id="@+id/end_barrier"
-                app:barrierMargin="10dp" />
-
-            <TextView
-                android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
-                app:layout_constraintTop_toTopOf="parent"
-                android:layout_margin="5dp"
-                app:layout_constraintStart_toStartOf="parent"
-                android:id="@+id/text_view_name"
-                android:text="@string/view_name" />
+                android:layout_height="wrap_content"
+                app:barrierDirection="end"
+                app:barrierMargin="10dp"
+                app:constraint_referenced_ids="text_view_version, text_view_author, text_view_launcher, text_view_copyright" />
 
             <TextView
-                android:layout_height="wrap_content"
-                android:layout_width="0dp"
-                app:layout_constraintStart_toEndOf="@+id/end_barrier"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintBaseline_toBaselineOf="@+id/text_view_name"
-                android:id="@+id/text_info_name"
-                android:text="@string/info_name" />
-
-            <TextView
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
-                android:layout_margin="5dp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/text_info_name"
                 android:id="@+id/text_view_version"
-                android:text="@string/view_version" />
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:text="@string/view_version"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:layout_height="wrap_content"
+                android:id="@+id/info_version"
                 android:layout_width="0dp"
-                app:layout_constraintStart_toEndOf="@+id/end_barrier"
-                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_height="wrap_content"
                 app:layout_constraintBaseline_toBaselineOf="@+id/text_view_version"
-                android:id="@+id/info_version" />
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/end_barrier" />
 
             <TextView
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
-                android:layout_margin="5dp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/info_version"
                 android:id="@+id/text_view_author"
-                android:text="@string/view_author" />
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:text="@string/view_author"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/info_version" />
 
             <TextView
-                android:layout_height="wrap_content"
-                android:layout_width="0dp"
-                app:layout_constraintStart_toEndOf="@+id/end_barrier"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintBaseline_toBaselineOf="@+id/text_view_author"
                 android:id="@+id/text_info_author"
-                android:text="@string/info_author" />
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/info_author"
+                app:layout_constraintBaseline_toBaselineOf="@+id/text_view_author"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/end_barrier" />
 
             <TextView
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
-                android:layout_margin="5dp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/text_info_author"
                 android:id="@+id/text_view_launcher"
-                android:text="@string/view_launcher" />
-
-            <TextView
-                android:layout_height="wrap_content"
-                android:layout_width="0dp"
-                app:layout_constraintStart_toEndOf="@+id/end_barrier"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintBaseline_toBaselineOf="@+id/text_view_launcher"
-                android:id="@+id/text_info_launcher"
-                android:text="@string/info_launcher" />
-
-            <TextView
-                android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_margin="5dp"
+                android:text="@string/view_launcher"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/text_info_launcher"
-                android:id="@+id/text_view_copyright"
-                android:text="@string/view_copyright" />
+                app:layout_constraintTop_toBottomOf="@+id/text_info_author" />
 
             <TextView
-                android:layout_height="wrap_content"
+                android:id="@+id/text_info_launcher"
                 android:layout_width="0dp"
-                app:layout_constraintStart_toEndOf="@+id/end_barrier"
+                android:layout_height="wrap_content"
+                android:text="@string/info_launcher"
+                app:layout_constraintBaseline_toBaselineOf="@+id/text_view_launcher"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintBaseline_toBaselineOf="@+id/text_view_copyright"
+                app:layout_constraintStart_toEndOf="@+id/end_barrier" />
+
+            <TextView
+                android:id="@+id/text_view_copyright"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:text="@string/view_copyright"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/text_info_launcher" />
+
+            <TextView
                 android:id="@+id/text_info_copyright"
-                android:text="@string/info_copyright" />
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/info_copyright"
+                app:layout_constraintBaseline_toBaselineOf="@+id/text_view_copyright"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/end_barrier" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.core.widget.NestedScrollView>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/option_layout"
-        android:visibility="gone"
-        tools:visibility="visible"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/open_options">
+        android:layout_gravity="bottom">
 
-        <TextView
-            android:id="@+id/text_option_glsl_cache"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/option_glsl_cache"
-            android:layout_margin="5dp"
-            app:layout_constraintBottom_toTopOf="@+id/input_max_glsl_cache_size" />
-
-        <EditText
-            android:id="@+id/input_max_glsl_cache_size"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/option_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:autofillHints=""
-            android:inputType="numberSigned"
-            tools:ignore="LabelFor"
-            app:layout_constraintBottom_toTopOf="@+id/text_option_angle" />
+            android:padding="8dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@+id/open_options"
+            tools:visibility="visible">
 
-        <TextView
-            android:id="@+id/text_option_angle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/option_angle"
-            android:layout_margin="5dp"
-            app:layout_constraintBottom_toTopOf="@+id/spinner_angle" />
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/input_max_glsl_cache_size_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:hint="@string/option_glsl_cache"
+                app:errorEnabled="true"
+                app:counterEnabled="true"
+                app:counterMaxLength="5"
+                app:layout_constraintBottom_toTopOf="@+id/text_option_angle"
+                app:helperTextEnabled="true"
+                app:helperText="@string/option_glsl_cache_helper"
+                app:placeholderText="24">
 
-        <Spinner
-            android:id="@+id/spinner_angle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            app:layout_constraintBottom_toTopOf="@+id/text_option_no_error" />
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/input_max_glsl_cache_size"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="numberSigned" />
 
-        <TextView
-            android:id="@+id/text_option_no_error"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/option_no_error"
-            android:layout_margin="5dp"
-            app:layout_constraintBottom_toTopOf="@+id/spinner_no_error" />
-
-        <Spinner
-            android:id="@+id/spinner_no_error"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            app:layout_constraintBottom_toTopOf="@+id/layout_option_ext_gl43" />
-
-        <LinearLayout
-            android:id="@+id/layout_option_ext_gl43"
-            android:layout_marginBottom="10dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintBottom_toTopOf="@+id/layout_option_ext_cs">
+            </com.google.android.material.textfield.TextInputLayout>
 
             <TextView
-                android:layout_width="0dp"
+                android:id="@+id/text_option_angle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:text="@string/option_angle"
+                app:layout_constraintBottom_toTopOf="@+id/spinner_angle"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <Spinner
+                android:id="@+id/spinner_angle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:minHeight="48dp"
+                app:layout_constraintBottom_toTopOf="@+id/text_option_no_error" />
+
+            <TextView
+                android:id="@+id/text_option_no_error"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:text="@string/option_no_error"
+                app:layout_constraintBottom_toTopOf="@+id/spinner_no_error"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <Spinner
+                android:id="@+id/spinner_no_error"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:minHeight="48dp"
+                app:layout_constraintBottom_toTopOf="@+id/switch_ext_gl43" />
+
+            <com.google.android.material.materialswitch.MaterialSwitch
+                android:id="@+id/switch_ext_gl43"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/option_ext_gl43"
-                android:layout_gravity="center"
-                android:layout_weight="1" />
+                app:layout_constraintBottom_toTopOf="@+id/switch_ext_cs" />
 
-            <Switch
-                android:id="@+id/switch_ext_gl43"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center" />
 
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/layout_option_ext_cs"
-            android:layout_marginBottom="5dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintBottom_toBottomOf="parent">
-
-            <TextView
-                android:layout_width="0dp"
+            <com.google.android.material.materialswitch.MaterialSwitch
+                android:id="@+id/switch_ext_cs"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/option_ext_cs"
-                android:layout_gravity="center"
-                android:layout_weight="1" />
+                app:layout_constraintBottom_toBottomOf="parent" />
 
-            <Switch
-                android:id="@+id/switch_ext_cs"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center" />
 
-        </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
+        <Button
+            android:id="@+id/open_options"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="6dp"
+            android:text="@string/open_options"
+            app:layout_constraintBottom_toBottomOf="parent"
+            tools:ignore="VisualLintButtonSize" />
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="6dp"
-        android:text="@string/open_options"
-        tools:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:id="@+id/open_options" />
-
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
