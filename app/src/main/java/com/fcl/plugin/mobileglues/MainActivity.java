@@ -129,13 +129,13 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 @Override
                 public void afterTextChanged(Editable s) {
                     String text = s.toString().trim();
-                    binding.inputMaxGlslCacheSizeLayout.setError(null);
                     if (!text.isEmpty()) {
                         try {
                             int number = Integer.parseInt(text);
                             if (number < -1 || number == 0) {
                                 binding.inputMaxGlslCacheSizeLayout.setError(getString(R.string.option_glsl_cache_error_range));
                             } else {
+                                binding.inputMaxGlslCacheSizeLayout.setError(null);
                                 config.setMaxGlslCacheSize(number);
                             }
                         } catch (NumberFormatException e) {
@@ -145,6 +145,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                             throw new RuntimeException(e);
                         }
                     } else {
+                        binding.inputMaxGlslCacheSizeLayout.setError(null);
                         try {
                             config.setMaxGlslCacheSize(24);
                         } catch (IOException e) {

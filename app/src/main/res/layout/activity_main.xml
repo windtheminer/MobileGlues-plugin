@@ -130,7 +130,7 @@
                 android:id="@+id/input_max_glsl_cache_size_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="6dp"
+                android:layout_marginBottom="12dp"
                 android:hint="@string/option_glsl_cache"
                 app:errorEnabled="true"
                 app:counterEnabled="true"
