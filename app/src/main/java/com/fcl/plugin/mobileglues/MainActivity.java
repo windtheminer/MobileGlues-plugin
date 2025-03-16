@@ -105,7 +105,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             config = MGConfig.loadConfig(this);
 
             if (config == null) {
-                config = new MGConfig(0, 0, 0, 0, 30);
+                config = new MGConfig(0, 0, 0, 0, 24);
             }
             if (config.getEnableANGLE() > 3 || config.getEnableANGLE() < 0)
                 config.setEnableANGLE(0);
@@ -113,7 +113,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 config.setEnableNoError(0);
 
             if (config.getMaxGlslCacheSize() == NULL)
-                config.setMaxGlslCacheSize(30);
+                config.setMaxGlslCacheSize(24);
 
             binding.inputMaxGlslCacheSize.setText(String.valueOf(config.getMaxGlslCacheSize()));
             binding.spinnerAngle.setSelection(config.getEnableANGLE());
@@ -128,18 +128,26 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             binding.inputMaxGlslCacheSize.addTextChangedListener(new TextWatcher() {
                 @Override
                 public void afterTextChanged(Editable s) {
-                    String text = s.toString();
+                    String text = s.toString().trim();
+                    binding.inputMaxGlslCacheSizeLayout.setError(null);
                     if (!text.isEmpty()) {
                         try {
                             int number = Integer.parseInt(text);
                             if (number < -1 || number == 0) {
-                                binding.inputMaxGlslCacheSize.setError("Error: number cannot be 0 or less than -1.");
+                                binding.inputMaxGlslCacheSizeLayout.setError(getString(R.string.option_glsl_cache_error_range));
+                            } else {
+                                config.setMaxGlslCacheSize(number);
                             }
-                            config.setMaxGlslCacheSize(number);
                         } catch (NumberFormatException e) {
-                            binding.inputMaxGlslCacheSize.setError("Error: invalid number.");
+                            binding.inputMaxGlslCacheSizeLayout.setError(getString(R.string.option_glsl_cache_error_invalid));
                         } catch (IOException e) {
-                            binding.inputMaxGlslCacheSize.setError("Error: unexpected error.");
+                            binding.inputMaxGlslCacheSizeLayout.setError(getString(R.string.option_glsl_cache_error_unexpected));
+                            throw new RuntimeException(e);
+                        }
+                    } else {
+                        try {
+                            config.setMaxGlslCacheSize(24);
+                        } catch (IOException e) {
                             throw new RuntimeException(e);
                         }
                     }
@@ -218,7 +226,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
                             MGDirectoryUri = treeUri;
                             MGConfig config = MGConfig.loadConfig(this);
-                            if (config == null) config = new MGConfig(0, 0, 0, 0, 30);
+                            if (config == null) config = new MGConfig(0, 0, 0, 0, 24);
                             config.saveConfig(this);
                             showOptions();
                         }
