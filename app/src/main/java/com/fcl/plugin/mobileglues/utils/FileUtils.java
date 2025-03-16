@@ -33,7 +33,7 @@ public class FileUtils {
         }
     }
 
-    public static void writeText(Context context, Uri directoryUri, String fileName, String text) throws IOException {
+    public static void writeText(Context context, Uri directoryUri, String fileName, String text, String mimeType) throws IOException {
         final ContentResolver resolver = context.getContentResolver();
         final String baseDocId = DocumentsContract.getTreeDocumentId(directoryUri);
         final Uri fileUri = DocumentsContract.buildDocumentUriUsingTree(directoryUri, baseDocId + "/" + fileName);
@@ -46,10 +46,14 @@ public class FileUtils {
 //            e.printStackTrace();
         }
 
+        Uri parentDocumentUri = DocumentsContract.buildDocumentUriUsingTree(
+                directoryUri, DocumentsContract.getTreeDocumentId(directoryUri)
+        );
+
         Uri newFileUri = DocumentsContract.createDocument(
                 resolver,
-                directoryUri,
-                "text/plain",
+                parentDocumentUri,
+                mimeType,
                 fileName);
 
         if (newFileUri == null) {
