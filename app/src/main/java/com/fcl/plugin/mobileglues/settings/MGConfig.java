@@ -112,7 +112,7 @@ public class MGConfig {
             if (MainActivity.MGDirectoryUri == null) {
                 throw new IOException("SAF directory not selected");
             }
-            FileUtils.writeText(context, MainActivity.MGDirectoryUri, "config.json", configStr);
+            FileUtils.writeText(context, MainActivity.MGDirectoryUri, "config.json", configStr, "application/json");
         } else {
             FileUtils.writeText(new File(Constants.CONFIG_FILE_PATH), configStr);
         }
