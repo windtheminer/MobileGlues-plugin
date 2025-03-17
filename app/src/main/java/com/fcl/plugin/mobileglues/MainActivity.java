@@ -82,7 +82,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         ArrayAdapter<String> noErrorAdapter = new ArrayAdapter<>(this, R.layout.spinner, noErrorOptions);
         binding.spinnerNoError.setAdapter(noErrorAdapter);
 
-        binding.infoVersion.setText(BuildConfig.VERSION_NAME);
+        binding.info.setOnClickListener(view -> new AppInfoDialogBuilder(MainActivityContext).create().show());
 
         binding.openOptions.setOnClickListener(view -> {
             if (State) {
