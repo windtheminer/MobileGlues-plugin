@@ -35,8 +35,8 @@ jobs:
 
       - name: Install Android NDK
         run: |
-          echo "y" | sdkmanager "ndk;27.0.12077973"
-          echo "ndk.dir=$ANDROID_HOME/ndk/27.0.12077973" >> local.properties
+          echo "y" | sdkmanager "ndk;27.1.12297006"
+          echo "ndk.dir=$ANDROID_HOME/ndk/27.1.12297006" >> local.properties
 
       - name: Change wrapper permissions
         run: chmod +x ./gradlew
