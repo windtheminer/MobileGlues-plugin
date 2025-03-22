@@ -20,7 +20,7 @@ android {
 
         ndk {
             abiFilters.clear()
-            abiFilters.add("arm64-v8a")
+//            abiFilters.add("arm64-v8a")
         }
     }
 
