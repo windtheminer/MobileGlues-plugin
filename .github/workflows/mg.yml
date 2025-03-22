@@ -14,12 +14,9 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
         with:
-          submodules: true
-          token: ${{ secrets.ACCESS_TOKEN }}
           lfs: true
-
-      - name: checkoutLFS
-        run: cd MobileGlues && git lfs pull && cd ..
+          submodules: recursive
+          token: ${{ secrets.ACCESS_TOKEN }}
 
       - name: Set current date as env variable
         run: echo "date_today=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
