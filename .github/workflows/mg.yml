@@ -19,6 +19,9 @@ jobs:
           token: ${{ secrets.ACCESS_TOKEN }}
 
       - name: Set current date as env variable
+        run: git submodule foreach 'git lfs pull'
+
+      - name: Set current date as env variable
         run: echo "date_today=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
 
       - name: Set repository name as env variable
