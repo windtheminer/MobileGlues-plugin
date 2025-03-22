@@ -19,7 +19,7 @@ jobs:
           lfs: true
 
       - name: checkoutLFS
-        run: git lfs pull
+        run: cd MobileGlues && git lfs pull && cd ..
 
       - name: Set current date as env variable
         run: echo "date_today=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
