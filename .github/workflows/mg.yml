@@ -16,6 +16,7 @@ jobs:
         with:
           submodules: true
           token: ${{ secrets.ACCESS_TOKEN }}
+          lfs: true
 
       - name: Set current date as env variable
         run: echo "date_today=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
