@@ -2,7 +2,7 @@ MobileGlues
 ====
 Please see [MobileGlues-release](https://github.com/MobileGL-Dev/MobileGlues-release) to get more information.
 
-LICENSE
+License
 ====
 MobileGlues is licensed under **GNU LGPL-2.1 License**.
 
