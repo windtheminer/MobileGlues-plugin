@@ -14,12 +14,8 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
         with:
-          lfs: true
-          submodules: recursive
+          submodules: true
           token: ${{ secrets.ACCESS_TOKEN }}
-
-      - name: Pull LFS files in submodules
-        run: git submodule foreach --recursive 'git lfs pull'
 
       - name: Set current date as env variable
         run: echo "date_today=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
