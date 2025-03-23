@@ -1,6 +1,6 @@
 MobileGlues
 ====
-Please see [MobileGlues-release](https://github.com/MobileGL-Dev/MobileGlues-release) to get more information.
+Please see [MobileGlues](https://github.com/MobileGL-Dev/MobileGlues) and [MobileGlues-release](https://github.com/MobileGL-Dev/MobileGlues-release) to get more information.
 
 License
 ====
