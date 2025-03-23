@@ -18,8 +18,8 @@ jobs:
           submodules: recursive
           token: ${{ secrets.ACCESS_TOKEN }}
 
-      - name: Pull LFS files in submodules
-        run: git submodule foreach --recursive 'git lfs pull'
+      - name: Set current date as env variable
+        run: git submodule foreach 'git lfs pull'
 
       - name: Set current date as env variable
         run: echo "date_today=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
