@@ -6,7 +6,7 @@ LICENSE
 ====
 MobileGlues is licensed under **GNU LGPL-2.1 License**.
 
-Please see [LICENSE](https://github.com/MobileGL-Dev/MobileGlues-plugin/blob/main/LICENSE.md).
+Please see [LICENSE](https://github.com/MobileGL-Dev/MobileGlues-plugin/blob/main/LICENSE).
 
 Third party components
 ====
